@@ -22,26 +22,8 @@ def registerProd(prod):
     jmanagerP.create_json('data/product.json', prod)
     
 
-def showProd(prod):
-    print(prod)
-
-
-def registerClient(clients, prod):
-    x = 1  
-    # telefone, endereço, cpf, nomeDaMãe, email, listaDeCodigoProdutos, valorTotalPagar
-    cAux = ["", "", "", "", "", [], 0]
-    name = input("Nome do Cliente: ")
-    cAux[0] = input("Telefone: ")
-    cAux[1] = input("Endereço: ")
-    cAux[2] = input("CPF: ")
-    cAux[3] = input("Nome da Mãe: ")
-    cAux[4] = input("Email: ")
-    #data de nascimento
-    clients[name] = cAux
-    addProdClient(clients, prod, 1, name)
-
+def addClient(clients):
     jmanagerC.create_json('data/clients.json', clients)
-    jmanagerP.create_json('data/product.json', prod)
     
 
 def showClients(clients):

@@ -1,12 +1,20 @@
+from imp import load_source
 from tkinter import *
+from tkinter.filedialog import Directory
 from tkinter.font import BOLD
 from ctypes.wintypes import RGB
 from tkinter import ttk
 import functions as func
+import json_manager as json
+
+#Iniciando db
+jmanagerC = json.JsonManagerClient()
+jmanagerP = json.JsonManagerProd()
+dictClients = {}
+dictClients = jmanagerC.read_json('data/clients.json')
 
 root = Tk()
-dictProd = {}
-dictClients = {}
+
 
 class Funcs():
     def limpa_tela_clients(self):
@@ -19,13 +27,40 @@ class Funcs():
         self.cpf_cadClients_entry.delete(0, END)
         self.telefone_cadClients_entry.delete(0, END)
         self.email_cadClients_entry.delete(0, END)
+        self.dataNas_cadClients_entry.delete(0, END)
         self.nomeMae_cadClients_entry.delete(0, END)
+        self.endereco_cadClients_entry.delete(0, END)
         self.obs_cadClients_entry.delete(0, END)
-        
 
-    def inicia_bd():
-        dictProd = func.startProducts()
-        dictClients = func.startClients()
+    def addClient(self):
+        # cpf, telefone, email, dataNascimento, nomeDaMãe,  endereço,  obs
+        cAux = ["", "", "", "", "", "", ""]
+
+        name = self.nome_cadClients_entry.get()
+        cAux[0] = self.cpf_cadClients_entry.get()
+        cAux[1] = self.telefone_cadClients_entry.get()
+        cAux[2] = self.email_cadClients_entry.get()
+        cAux[3] = self.dataNas_cadClients_entry.get()
+        cAux[4] = self.nomeMae_cadClients_entry.get()
+        cAux[5] = self.endereco_cadClients_entry.get()
+        cAux[6] = self.obs_cadClients_entry.get()
+        dictClients[name] = cAux
+
+        jmanagerC.create_json('data/clients.json', dictClients)
+        self.select_lista_clients()
+        
+    def select_lista_clients(self):
+        self.listaCli.delete(*self.listaCli.get_children())
+        key = dictClients.keys()
+
+        lista = []
+        for i in dictClients:
+            lista.append(key[i])
+            lista.append(dictClients[key[i]][0])
+            lista.append(dictClients[key[i]][1])
+        for i in lista:
+            self.listaCli.insert("", END, values=i)
+    
 
 class Application(Funcs):
     def __init__(self):
@@ -148,7 +183,14 @@ class Application(Funcs):
         self.lb_email_cadClients.place(relx=0.1, rely=0.25)
 
         self.email_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.email_cadClients_entry.place(relx=0.1, rely=0.3, relwidth=0.8)
+        self.email_cadClients_entry.place(relx=0.1, rely=0.3, relwidth=0.375)
+
+        #Criação da label e entrada da data de nascimento
+        self.lb_dataNas_cadClients = Label(self.frame_1, text="Data de Nascimento(00/00/0000)", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.lb_dataNas_cadClients.place(relx=0.525, rely=0.25)
+
+        self.dataNas_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.dataNas_cadClients_entry.place(relx=0.525, rely=0.3, relwidth=0.375)
 
         #Criação da label e entrada do nome da mãe
         self.lb_nomeMae_cadClients = Label(self.frame_1, text="Nome da Mãe", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
@@ -157,20 +199,30 @@ class Application(Funcs):
         self.nomeMae_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.nomeMae_cadClients_entry.place(relx=0.1, rely=0.4, relwidth=0.8)
 
+        #Criação da label e entrada do endereco
+        self.lb_endereco_cadClients = Label(self.frame_1, text="Endereço", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.lb_endereco_cadClients.place(relx=0.1, rely=0.45)
+
+        self.endereco_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.endereco_cadClients_entry.place(relx=0.1, rely=0.5, relwidth=0.8)
+
         #Criação da label e entrada do observação
         self.lb_obs_cadClients = Label(self.frame_1, text="Observação", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.lb_obs_cadClients.place(relx=0.1, rely=0.45)
+        self.lb_obs_cadClients.place(relx=0.1, rely=0.55)
 
         self.obs_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.obs_cadClients_entry.place(relx=0.1, rely=0.5, relwidth=0.8)
+        self.obs_cadClients_entry.place(relx=0.1, rely=0.6, relwidth=0.8)
 
 
         #limpar
         self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_cadClients)
         self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
         #enviar
-        self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.addClient)
         self.bt_cadClients_enviar.place(relx=0.65, rely=0.7, relwidth=0.15, relheight=0.1)
+
+
+
 
 
 Application()
