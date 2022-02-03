@@ -36,7 +36,6 @@ def addProdClient(clients, prod, num, name):
         while x != 2:
             x = int(input("\n\n[1]Adicionar um produto\n[2]Sair\n"))  
             if x == 1:            
-                showProd(prod) 
                 cod = checkProd(prod) 
                 
                 qProd = prod[cod][1]
@@ -62,7 +61,7 @@ def addProdClient(clients, prod, num, name):
                 name = checkClient(clients)
                 print("\n\n")
 
-                showProd(prod)
+                
                 cod = checkProd(prod)
                 
                 qProd = prod[cod][1]

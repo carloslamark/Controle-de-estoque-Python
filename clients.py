@@ -1,4 +1,3 @@
-from imp import load_source
 from tkinter import *
 from tkinter.filedialog import Directory
 from tkinter.font import BOLD
@@ -10,8 +9,9 @@ import json_manager as json
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
 jmanagerP = json.JsonManagerProd()
-dictClients = {}
+dictClients = []
 dictClients = jmanagerC.read_json('data/clients.json')
+
 
 root = Tk()
 
@@ -46,20 +46,21 @@ class Funcs():
         cAux[6] = self.obs_cadClients_entry.get()
         dictClients[name] = cAux
 
+
         jmanagerC.create_json('data/clients.json', dictClients)
         self.select_lista_clients()
+        self.limpa_tela_cadClients()
         
     def select_lista_clients(self):
         self.listaCli.delete(*self.listaCli.get_children())
-        key = dictClients.keys()
-
+        
         lista = []
         for i in dictClients:
-            lista.append(key[i])
-            lista.append(dictClients[key[i]][0])
-            lista.append(dictClients[key[i]][1])
-        for i in lista:
-            self.listaCli.insert("", END, values=i)
+            lista.append(i)
+            lista.append(dictClients[i][0])
+            lista.append(dictClients[i][1])
+            self.listaCli.insert("", END, values=lista)
+            lista=[]
     
 
 class Application(Funcs):
@@ -68,6 +69,7 @@ class Application(Funcs):
         self.clients_tela()
         self.clients_widgets_frame_1()
         self.clients_lista_frame_2()
+        self.select_lista_clients()
         root.mainloop()
 
     def clients_tela(self):
@@ -104,7 +106,7 @@ class Application(Funcs):
 
         self.telefone_clients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.telefone_clients_entry.place(relx=0.525, rely=0.44, relwidth=0.375)
-
+        
 
         #limpar
         self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_clients)
@@ -128,7 +130,7 @@ class Application(Funcs):
         self.listaCli.heading("#1", text="NomeCliente")
         self.listaCli.heading("#2", text="CPF")
         self.listaCli.heading("#3", text="Telefone")
-
+        
         #tamanho -> 500=100%
         self.listaCli.column('#0', width=0, stretch=NO)
         self.listaCli.column("#1", width=300)

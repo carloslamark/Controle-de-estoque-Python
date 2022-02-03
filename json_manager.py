@@ -39,6 +39,7 @@ class JsonManagerClient:
             dump(data, f, indent=2, separators=(',', ': '))
 
     def read_json(self, file):
+        data = []
         if isfile(self.path + file):
             with open(self.path + file) as f:
                 data = load(f)
