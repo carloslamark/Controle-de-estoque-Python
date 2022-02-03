@@ -36,6 +36,7 @@ def registerClient(clients, prod):
     cAux[2] = input("CPF: ")
     cAux[3] = input("Nome da Mãe: ")
     cAux[4] = input("Email: ")
+    #data de nascimento
     clients[name] = cAux
     addProdClient(clients, prod, 1, name)
 
