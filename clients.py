@@ -73,15 +73,7 @@ class Funcs():
         for i in self.listaCli.selection():
             col1, col2, col3 = self.listaCli.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do cliente
-        self.cad_clientes(2)
-        self.nome_cadClients_entry.insert(END, col1)
-        self.cpf_cadClients_entry.insert(END, dictClients[col1][0])
-        self.telefone_cadClients_entry.insert(END, dictClients[col1][1])
-        self.email_cadClients_entry.insert(END, dictClients[col1][2])
-        self.dataNas_cadClients_entry.insert(END, dictClients[col1][3])
-        self.nomeMae_cadClients_entry.insert(END, dictClients[col1][4])
-        self.endereco_cadClients_entry.insert(END, dictClients[col1][5])
-        self.obs_cadClients_entry.insert(END, dictClients[col1][6])  
+        self.exibir_cliente(col1) 
 
     def editarCliente(self, flag):
         self.limpa_tela_clients()
@@ -134,7 +126,7 @@ class Application(Funcs):
     def clients_tela(self):
         self.root.title("Clientes")
         self.root.configure(background= '#582f0e')
-        self.root.geometry('900x600') #tamanho da tela
+        self.root.geometry('1200x700') #tamanho da tela
         self.root.resizable(True, True) #Horizontal, Vertical
         self.root.minsize(width=600, height=500) #tamanho das telas
         #Frames da tela de clientes
@@ -290,7 +282,46 @@ class Application(Funcs):
             self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.deleta_cliente(), self.root2.destroy()])
             self.bt_apagar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
    
+    def exibir_cliente(self, key):
+        self.root3 = Toplevel()
+        self.root3.title("Informações do Cliente")
+        self.root3.configure(background= '#582f0e')
+        self.root3.geometry('900x600') #tamanho da tela
+        self.root3.resizable(False, False) #Horizontal, Vertical
+        self.root3.transient(self.root)
+        self.root3.focus_force()
+        self.root3.grab_set()
 
+        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
+
+        self.exibir_cliente_widgets(key)
+
+    def exibir_cliente_widgets(self, key):
+        #Nome
+        self.exibir_nome = Label(self.frame_1, text="Nome: "+key, bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_nome.place(relx=0.1, rely=0.1)
+        #cpf
+        self.exibir_cpf = Label(self.frame_1, text="CPF: "+dictClients[key][0], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_cpf.place(relx=0.1, rely=0.2)
+        #Telefone
+        self.exibir_telefone = Label(self.frame_1, text="Telefone: "+dictClients[key][1], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_telefone.place(relx=0.5, rely=0.2)
+        #email
+        self.exibir_email = Label(self.frame_1, text="Email: "+dictClients[key][2], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_email.place(relx=0.1, rely=0.3)
+        #Data de nascimento
+        self.exibir_dataNas = Label(self.frame_1, text="Data de Nascimento: "+dictClients[key][3], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_dataNas.place(relx=0.5, rely=0.3)
+        #Nome da mãe
+        self.exibir_nomeMae = Label(self.frame_1, text="Nome da Mãe: "+dictClients[key][4], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_nomeMae.place(relx=0.1, rely=0.4)
+        #Endereço
+        self.exibir_endereco = Label(self.frame_1, text="Endereço: "+dictClients[key][5], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.exibir_endereco.place(relx=0.1, rely=0.5)
+        #Observações
+        self.exibir_obs = Label(self.frame_1, text="Observações: "+dictClients[key][6], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD), wraplength=691.2, justify=LEFT)
+        self.exibir_obs.place(relx=0.1, rely=0.6)
 
 
 
