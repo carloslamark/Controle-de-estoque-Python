@@ -1,11 +1,22 @@
-from asyncio.windows_events import NULL
+from distutils import command
 from tkinter import *
 from tkinter.filedialog import Directory
 from tkinter.font import BOLD
 from ctypes.wintypes import RGB
 from tkinter import ttk
-import functions as func
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase import ttfonts
+from reportlab.platypus import SimpleDocTemplate, Image
+import webbrowser
+
 import json_manager as json
+import re
+
+
+
 
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
@@ -15,6 +26,45 @@ dictClients = jmanagerC.read_json('data/clients.json')
 
 
 root = Tk()
+
+class Relatorios():
+    def printCliente(self):
+        webbrowser.open("cliente.pdf")
+
+    def geraRelatCliente(self, key):
+        self.c = canvas.Canvas("cliente.pdf")
+
+        self.nomeRel = key
+        self.cpfRel = dictClients[key][0]
+        self.telefoneRel = dictClients[key][1]
+        self.emailRel = dictClients[key][2]
+        self.dataNasRel = dictClients[key][3]
+        self.nomeMaeRel = dictClients[key][4]
+        self.enderecoRel = dictClients[key][5]
+        self.obsRel = dictClients[key][6]
+
+        self.c.setFont("Helvetica-Bold", 24)
+        self.c.drawString(200, 790, "Ficha do Cliente")
+        #________________width, height 
+
+        self.c.setFont("Helvetica-Bold", 18)
+        self.c.drawString(50,700, "Nome: ")# pode ser self.c.drawString(50,700, "Nome: "+self.nomeRel), mas ficaria com a mesma fonte e tamanho
+        self.c.drawString(50,670, "CPF: ")
+
+        self.c.setFont("Helvetica", 16)
+        self.c.drawString(150, 700, self.nomeRel)
+        self.c.drawString(150, 670, self.cpfRel)
+
+        #Criar molduras na tela
+        self.c.rect(20, 550, 550, 20, fill=False, stroke=True)
+        #__________início esquerda, início cima, width, height, preencher, borda
+
+
+
+        self.c.showPage()
+        self.c.save()
+        self.printCliente()
+
 
 
 class Funcs():
@@ -110,11 +160,49 @@ class Funcs():
             del dictClients[name]
             self.addClient()
         
+    def busca_cliente(self):
+        nome = self.nome_clients_entry.get()
+        cpf = self.cpf_clients_entry.get()
+        telefone = self.telefone_clients_entry.get()
+        lista=[]
+        if nome!="":
+            self.listaCli.delete(*self.listaCli.get_children())
+            for i in dictClients:
+                if re.match(nome, i, re.IGNORECASE):
+                    lista.append(i)
+                    lista.append(dictClients[i][0])
+                    lista.append(dictClients[i][1])
+                    self.listaCli.insert("", END, values=lista)
+                    lista=[] 
+
+        elif cpf!="":
+            self.listaCli.delete(*self.listaCli.get_children())
+            for i in dictClients:
+                if re.search(cpf, dictClients[i][0], re.IGNORECASE):
+                    lista.append(i)
+                    lista.append(dictClients[i][0])
+                    lista.append(dictClients[i][1])
+                    self.listaCli.insert("", END, values=lista)
+                    lista=[]  
+
+        elif telefone!="":
+            self.listaCli.delete(*self.listaCli.get_children())
+            for i in dictClients:
+                if re.search(telefone, dictClients[i][1], re.IGNORECASE):
+                    lista.append(i)
+                    lista.append(dictClients[i][0])
+                    lista.append(dictClients[i][1])
+                    self.listaCli.insert("", END, values=lista)
+                    lista=[] 
+        else:
+            self.select_lista_clients()
+
+        self.limpa_tela_clients
 
 
     
 
-class Application(Funcs):
+class Application(Funcs, Relatorios):
     def __init__(self):
         self.root = root
         self.clients_tela()
@@ -163,7 +251,7 @@ class Application(Funcs):
         self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_clients)
         self.bt_limpar_clients.place(relx=0.15, rely=0.7, relwidth=0.1, relheight=0.15)
         #buscar
-        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.busca_cliente())
         self.bt_buscar.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
         #editar
         self.bt_novo = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.editarCliente(2))
@@ -291,11 +379,12 @@ class Application(Funcs):
         self.root3.transient(self.root)
         self.root3.focus_force()
         self.root3.grab_set()
+        
 
         self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
-        self.exibir_cliente_widgets(key)
+        self.exibir_cliente_widgets(key)     
 
     def exibir_cliente_widgets(self, key):
         #Nome
@@ -322,6 +411,31 @@ class Application(Funcs):
         #Observações
         self.exibir_obs = Label(self.frame_1, text="Observações: "+dictClients[key][6], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD), wraplength=691.2, justify=LEFT)
         self.exibir_obs.place(relx=0.1, rely=0.6)
+
+        self.Menus(key)
+
+    def Menus(self, key):
+        menubar = Menu(self.root3)
+        self.root3.config(menu=menubar)
+        filemenu = Menu(menubar)
+        filemenu2 = Menu(menubar)
+
+        def Quit(): 
+            self.root.destroy()
+
+        menubar.add_cascade(label="Opções", menu=filemenu)
+        menubar.add_cascade(label="Relatórios", menu=filemenu2)
+
+        filemenu.add_command(label="Limpa Busca", command=self.limpa_tela_clients)
+        filemenu.add_command(label="Sair", command=Quit)
+
+        filemenu2.add_command(label="Ficha do Cliente", command=lambda: self.geraRelatCliente(key))
+
+
+
+
+
+
 
 
 
