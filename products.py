@@ -129,8 +129,8 @@ class Funcs():
 
 
 
-class Aplication(Funcs):
-    def __init__(self):
+class Application(Funcs):
+    def start(self):
         self.root = root
         self.prod_screen()
         self.prod_widgets_frame_1()
@@ -258,4 +258,4 @@ class Aplication(Funcs):
 
 
 
-Aplication()
+Application()

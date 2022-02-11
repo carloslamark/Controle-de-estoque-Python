@@ -17,7 +17,6 @@ import re
 
 
 
-
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
 jmanagerP = json.JsonManagerProd()
@@ -28,8 +27,9 @@ dictProducts = jmanagerP.read_json('data/products.json')
 
 root = Tk()
 
-
 class Relatorios():
+    
+
     def printClient(self):
         webbrowser.open("client.pdf")
 
@@ -203,7 +203,7 @@ class Funcs():
     
 
 class Application(Funcs, Relatorios):
-    def __init__(self):
+    def start(self):
         self.root = root
         self.clients_screen()
         self.clients_widgets_frame_1()
