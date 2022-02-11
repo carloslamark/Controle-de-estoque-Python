@@ -34,23 +34,23 @@ class Funcs():
         self.semD_cadProd_entry.delete(0, END)
         self.comD_cadProd_entry.delete(0, END)
          
-    def variaveisProd(self):
+    def variaveis_prod(self):
         pAux = ["", "", "", ""]
         codigo = self.codigo_cadProd_entry.get()
         pAux[0] = self.produto_cadProd_entry.get()
         pAux[1] = self.quantidade_cadProd_entry.get()
         pAux[2] = self.semD_cadProd_entry.get()
-        pAux[3] = self.comD_cadProd_entry_entry.get()
+        pAux[3] = self.comD_cadProd_entry.get()
         
         return pAux, codigo
     
-    def addProd(self):
+    def add_prod(self):
         pAux = []
-        pAux, codigo = self.variaveisProd()
+        pAux, codigo = self.variaveis_prod()
         dictProducts[codigo] = pAux
 
         jmanagerP.create_json('data/products.json', dictProducts)
-        self.select_lista_Prod()
+        self.select_lista_prod()
         self.limpa_tela_cadProd()
 
     def select_lista_prod(self):
@@ -66,7 +66,7 @@ class Funcs():
             self.listaProd.insert("", END, values=lista)
             lista=[]
 
-    def onDubleClick(self, event):
+    def on_duble_click(self, event):
         self.limpa_tela_prod()
         self.listaProd.selection()
         col1=""
@@ -75,7 +75,7 @@ class Funcs():
             #col1 possui a chave para pegar a informações na ficha do produto
         self.exibir_prod(col1)
 
-    def editarProd(self, flag):
+    def editar_prod(self, flag):
         self.limpa_tela_prod()
         self.listaProd.selection()
         col1=""
@@ -93,7 +93,7 @@ class Funcs():
              
     def deleta_prod(self):
         pAux = []
-        pAux, codigo = self.variaveisProd()
+        pAux, codigo = self.variaveis_prod()
         del dictProducts[codigo]
 
         jmanagerP.create_json('data/products.json', dictProducts)
@@ -102,12 +102,12 @@ class Funcs():
 
     def alterar_prod(self, codigo):
         if self.codigo_cadProd_entry.get() in dictProducts:
-            self.addProd()
+            self.add_prod()
         else:
             del dictProducts[codigo]
-            self.addProd()
+            self.add_prod()
 
-    def busca_cliente(self):
+    def busca_prod(self):
         codigo = self.codigo_prod_entry.get()
         lista=[]
         if codigo!="":
@@ -156,16 +156,16 @@ class Aplication(Funcs):
         self.codigo_prod_entry.place(relx=0.15, rely=0.5, relwidth=0.2)
 
         #buscar
-        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.busca_prod())
         self.bt_buscar.place(relx=0.38, rely=0.3, relwidth=0.1, relheight=0.4)
         #limpar
-        self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.limpa_tela_prod())
         self.bt_limpar.place(relx=0.49, rely=0.3, relwidth=0.1, relheight=0.4)
         #editar
-        self.bt_novo = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
-        self.bt_novo.place(relx=0.63, rely=0.3, relwidth=0.1, relheight=0.4)
+        self.bt_editar = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.editar_prod(2))
+        self.bt_editar.place(relx=0.63, rely=0.3, relwidth=0.1, relheight=0.4)
         #novo
-        self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_prod(1, ""))
         self.bt_novo.place(relx=0.74, rely=0.3, relwidth=0.1, relheight=0.4)
 
     def prod_lista_frame_2(self):
@@ -190,7 +190,7 @@ class Aplication(Funcs):
         self.scroolLista = Scrollbar(self.frame_2, orient='vertical')
         self.listaProd.configure(yscroll=self.scroolLista.set)
         self.scroolLista.place(relx=0.96, rely=0.052, relwidth=0.03, relheight=0.896)
-        # self.listaProd.bind("<Double-1>",self.onDubleClick) #Função DoubleClick  
+        # self.listaProd.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
 
     def cad_prod(self, flag, aux):
         self.root2 = Toplevel()
@@ -205,7 +205,7 @@ class Aplication(Funcs):
         self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
-        self.cad_clientes_widgets(flag, aux)   
+        self.cad_prod_widgets(flag, aux)   
     
     def cad_prod_widgets(self, flag, aux):
         #Criação da label e entrada do Código do Produto
@@ -240,7 +240,7 @@ class Aplication(Funcs):
             self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #enviar
-            self.bt_enviar_cadProd = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.addProd(), self.root2.destroy()])
+            self.bt_enviar_cadProd = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_prod(), self.root2.destroy()])
             self.bt_enviar_cadProd.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar

@@ -245,8 +245,8 @@ class Application(Funcs, Relatorios):
         self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.busca_cliente())
         self.bt_buscar.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
         #editar
-        self.bt_novo = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.editarCliente(2))
-        self.bt_novo.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
+        self.bt_editar = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.editarCliente(2))
+        self.bt_editar.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
         #novo
         self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_clientes(1, ""))
         self.bt_novo.place(relx=0.75, rely=0.7, relwidth=0.1, relheight=0.15)
