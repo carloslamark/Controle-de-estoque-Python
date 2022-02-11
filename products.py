@@ -20,7 +20,7 @@ jmanagerP = json.JsonManagerProd()
 dictProducts = []
 dictProducts = jmanagerP.read_json('data/products.json')
 
-root = Tk()
+root2 = Tk()
 
 
 class Funcs():
@@ -131,22 +131,22 @@ class Funcs():
 
 class Application(Funcs):
     def start(self):
-        self.root = root
+        self.root2 = root2
         self.prod_screen()
         self.prod_widgets_frame_1()
         self.prod_list_frame_2()
         self.select_list_prod()
-        root.mainloop()
+        root2.mainloop()
 
     def prod_screen(self):
-            self.root.title("Estoque")
-            self.root.configure(background= '#582f0e')
-            self.root.geometry('1200x700')
-            self.root.resizable(True, True)
-            self.root.minsize(width=600, height=500)
-            self.frame_1 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+            self.root2.title("Estoque")
+            self.root2.configure(background= '#582f0e')
+            self.root2.geometry('1200x700')
+            self.root2.resizable(True, True)
+            self.root2.minsize(width=600, height=500)
+            self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
             self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.16)
-            self.frame_2 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+            self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
             self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.96, relheight=0.76)
     
     def prod_widgets_frame_1(self):
@@ -156,9 +156,9 @@ class Application(Funcs):
         self.codigo_prod_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.codigo_prod_entry.place(relx=0.15, rely=0.5, relwidth=0.2)
 
-        #searchr
-        self.bt_searchr = Button(self.frame_1, text="searchr", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
-        self.bt_searchr.place(relx=0.38, rely=0.3, relwidth=0.1, relheight=0.4)
+        #search
+        self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
+        self.bt_search.place(relx=0.38, rely=0.3, relwidth=0.1, relheight=0.4)
         #limpar
         self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.clean_screen_prod())
         self.bt_limpar.place(relx=0.49, rely=0.3, relwidth=0.1, relheight=0.4)
@@ -194,16 +194,16 @@ class Application(Funcs):
         # self.listProd.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
 
     def cad_prod(self, flag, aux):
-        self.root2 = Toplevel()
-        self.root2.title("Cadastro Produto")
-        self.root2.configure(background= '#582f0e')
-        self.root2.geometry('900x600') #tamanho da screen
-        self.root2.resizable(False, False) #Horizontal, Vertical
-        self.root2.transient(self.root)
-        self.root2.focus_force()
-        self.root2.grab_set()
+        self.root3 = Toplevel()
+        self.root3.title("Cadastro Produto")
+        self.root3.configure(background= '#582f0e')
+        self.root3.geometry('900x600') #tamanho da screen
+        self.root3.resizable(False, False) #Horizontal, Vertical
+        self.root3.transient(self.root2)
+        self.root3.focus_force()
+        self.root3.grab_set()
 
-        self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
         self.cad_prod_widgets(flag, aux)   
@@ -241,21 +241,21 @@ class Application(Funcs):
             self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #enviar
-            self.bt_enviar_cadProd = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_prod(), self.root2.destroy()])
+            self.bt_enviar_cadProd = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_prod(), self.root3.destroy()])
             self.bt_enviar_cadProd.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
             self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #change
-            self.bt_change_cadProd = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_prod(aux), self.root2.destroy()])
+            self.bt_change_cadProd = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_prod(aux), self.root3.destroy()])
             self.bt_change_cadProd.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
             #apagar
-            self.bt_apagar_cadProd = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_prod(), self.root2.destroy()])
+            self.bt_apagar_cadProd = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_prod(), self.root3.destroy()])
             self.bt_apagar_cadProd.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
 
     
 
 
 
-Application()
+# Application()

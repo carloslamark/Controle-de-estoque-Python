@@ -25,7 +25,7 @@ dictClients = jmanagerC.read_json('data/clients.json')
 dictProducts = []
 dictProducts = jmanagerP.read_json('data/products.json')
 
-root = Tk()
+root2 = Tk()
 
 class Relatorios():
     
@@ -204,23 +204,23 @@ class Funcs():
 
 class Application(Funcs, Relatorios):
     def start(self):
-        self.root = root
+        self.root2 = root2
         self.clients_screen()
         self.clients_widgets_frame_1()
         self.clients_list_frame_2()
         self.select_list_clients()
-        root.mainloop()
+        root2.mainloop()
   
     def clients_screen(self):
-        self.root.title("Clients")
-        self.root.configure(background= '#582f0e')
-        self.root.geometry('1200x700') #tamanho da screen
-        self.root.resizable(True, True) #Horizontal, Vertical
-        self.root.minsize(width=600, height=500) #tamanho das screens
+        self.root2.title("Clients")
+        self.root2.configure(background= '#582f0e')
+        self.root2.geometry('1200x700') #tamanho da screen
+        self.root2.resizable(True, True) #Horizontal, Vertical
+        self.root2.minsize(width=600, height=500) #tamanho das screens
         #Frames da screen de clients
-        self.frame_1 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem
-        self.frame_2 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_2.place(relx=0.02 , rely=0.5, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem   
   
     def clients_widgets_frame_1(self):
@@ -243,9 +243,9 @@ class Application(Funcs, Relatorios):
         #limpar
         self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_clients)
         self.bt_limpar_clients.place(relx=0.15, rely=0.7, relwidth=0.1, relheight=0.15)
-        #searchr
-        self.bt_searchr = Button(self.frame_1, text="searchr", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
-        self.bt_searchr.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
+        #search
+        self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
+        self.bt_search.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
         #edit
         self.bt_edit = Button(self.frame_1, text="edit", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_client(2))
         self.bt_edit.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
@@ -274,16 +274,16 @@ class Application(Funcs, Relatorios):
         self.listCli.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
    
     def cad_clients(self, flag, aux):
-        self.root2 = Toplevel()
-        self.root2.title("Cadastro Client")
-        self.root2.configure(background= '#582f0e')
-        self.root2.geometry('900x600') #tamanho da screen
-        self.root2.resizable(False, False) #Horizontal, Vertical
-        self.root2.transient(self.root)
-        self.root2.focus_force()
-        self.root2.grab_set()
+        self.root3 = Toplevel()
+        self.root3.title("Cadastro Client")
+        self.root3.configure(background= '#582f0e')
+        self.root3.geometry('900x600') #tamanho da screen
+        self.root3.resizable(False, False) #Horizontal, Vertical
+        self.root3.transient(self.root)
+        self.root3.focus_force()
+        self.root3.grab_set()
 
-        self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
         self.cad_clients_widgets(flag, aux)
@@ -335,31 +335,31 @@ class Application(Funcs, Relatorios):
             self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #enviar
-            self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_client(), self.root2.destroy()])
+            self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_client(), self.root3.destroy()])
             self.bt_cadClients_enviar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
             self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #change
-            self.bt_change = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root2.destroy()])
+            self.bt_change = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root3.destroy()])
             self.bt_change.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
             #apagar
-            self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_client(), self.root2.destroy()])
+            self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_client(), self.root3.destroy()])
             self.bt_apagar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
    
     def show_client(self, key):
-        self.root3 = Toplevel()
-        self.root3.title("Informações do Client")
-        self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da screen
-        self.root3.resizable(False, False) #Horizontal, Vertical
-        self.root3.transient(self.root)
-        self.root3.focus_force()
-        self.root3.grab_set()
+        self.root4 = Toplevel()
+        self.root4.title("Informações do Client")
+        self.root4.configure(background= '#582f0e')
+        self.root4.geometry('900x600') #tamanho da screen
+        self.root4.resizable(False, False) #Horizontal, Vertical
+        self.root4.transient(self.root2)
+        self.root4.focus_force()
+        self.root4.grab_set()
         
 
-        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1 = Frame(self.root4, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
         self.show_client_widgets(key)     
@@ -393,13 +393,13 @@ class Application(Funcs, Relatorios):
         self.Menus(key)
 
     def Menus(self, key):
-        menubar = Menu(self.root3)
-        self.root3.config(menu=menubar)
+        menubar = Menu(self.root4)
+        self.root4.config(menu=menubar)
         filemenu = Menu(menubar)
         filemenu2 = Menu(menubar)
 
         def Quit(): 
-            self.root.destroy()
+            self.root2.destroy()
 
         menubar.add_cascade(label="Opções", menu=filemenu)
         menubar.add_cascade(label="Relatórios", menu=filemenu2)
@@ -410,4 +410,4 @@ class Application(Funcs, Relatorios):
         filemenu2.add_command(label="Ficha do Client", command=lambda: self.geraRelatClient(key))
 
 
-Application()
+# Application()
