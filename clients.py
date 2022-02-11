@@ -95,7 +95,6 @@ class Funcs():
         return cAux, name
  
     def addClient(self):
-        # cpf, telefone, email, dataNascimento, nomeDaMãe,  endereço,  obs
         cAux = []
         cAux, name = self.variaveisCliente()
         dictClients[name] = cAux
