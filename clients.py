@@ -20,18 +20,21 @@ import re
 
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
+jmanagerP = json.JsonManagerProd()
 dictClients = []
 dictClients = jmanagerC.read_json('data/clients.json')
-
+dictProducts = []
+dictProducts = jmanagerP.read_json('data/products.json')
 
 root = Tk()
 
-class Relatorios():
-    def printCliente(self):
-        webbrowser.open("cliente.pdf")
 
-    def geraRelatCliente(self, key):
-        self.c = canvas.Canvas("cliente.pdf")
+class Relatorios():
+    def printClient(self):
+        webbrowser.open("client.pdf")
+
+    def geraRelatClient(self, key):
+        self.c = canvas.Canvas("client.pdf")
 
         self.nomeRel = key
         self.cpfRel = dictClients[key][0]
@@ -43,7 +46,7 @@ class Relatorios():
         self.obsRel = dictClients[key][6]
 
         self.c.setFont("Helvetica-Bold", 24)
-        self.c.drawString(200, 790, "Ficha do Cliente")
+        self.c.drawString(200, 790, "Ficha do Client")
         #________________width, height 
 
         self.c.setFont("Helvetica-Bold", 18)
@@ -54,7 +57,7 @@ class Relatorios():
         self.c.drawString(150, 700, self.nomeRel)
         self.c.drawString(150, 670, self.cpfRel)
 
-        #Criar molduras na tela
+        #Criar molduras na screen
         self.c.rect(20, 550, 550, 20, fill=False, stroke=True)
         #__________início esquerda, início cima, width, height, preencher, borda
 
@@ -62,17 +65,16 @@ class Relatorios():
 
         self.c.showPage()
         self.c.save()
-        self.printCliente()
-
+        self.printClient()
 
 
 class Funcs():
-    def limpa_tela_clients(self):
+    def clean_screen_clients(self):
         self.nome_clients_entry.delete(0, END)
         self.cpf_clients_entry.delete(0, END)
         self.telefone_clients_entry.delete(0, END)
  
-    def limpa_tela_cadClients(self):
+    def clean_screen_cadClients(self):
         self.nome_cadClients_entry.delete(0, END)
         self.cpf_cadClients_entry.delete(0, END)
         self.telefone_cadClients_entry.delete(0, END)
@@ -82,7 +84,7 @@ class Funcs():
         self.endereco_cadClients_entry.delete(0, END)
         self.obs_cadClients_entry.delete(0, END)
  
-    def variaveisCliente(self):
+    def variables_client(self):
         cAux = ["", "", "", "", "", "", ""]
         name = self.nome_cadClients_entry.get()
         cAux[0] = self.cpf_cadClients_entry.get()
@@ -94,45 +96,45 @@ class Funcs():
         cAux[6] = self.obs_cadClients_entry.get()
         return cAux, name
  
-    def addClient(self):
+    def add_client(self):
         cAux = []
-        cAux, name = self.variaveisCliente()
+        cAux, name = self.variables_client()
         dictClients[name] = cAux
 
         jmanagerC.create_json('data/clients.json', dictClients)
-        self.select_lista_clients()
-        self.limpa_tela_cadClients()       
+        self.select_list_clients()
+        self.clean_screen_cadClients()       
 
-    def select_lista_clients(self):
-        self.listaCli.delete(*self.listaCli.get_children())
+    def select_list_clients(self):
+        self.listCli.delete(*self.listCli.get_children())
         
-        lista = []
+        list = []
         for i in dictClients:
-            lista.append(i)
-            lista.append(dictClients[i][0])
-            lista.append(dictClients[i][1])
-            self.listaCli.insert("", END, values=lista)
-            lista=[] 
+            list.append(i)
+            list.append(dictClients[i][0])
+            list.append(dictClients[i][1])
+            self.listCli.insert("", END, values=list)
+            list=[] 
 
-    def onDubleClick(self, event):
-        self.limpa_tela_clients()
-        self.listaCli.selection()
+    def on_duble_click(self, event):
+        self.clean_screen_clients()
+        self.listCli.selection()
         col1=""
-        for i in self.listaCli.selection():
-            col1, col2, col3 = self.listaCli.item(i, 'values')
-            #col1 possui a chave para pegar a informações na ficha do cliente
-        self.exibir_cliente(col1) 
+        for i in self.listCli.selection():
+            col1, col2, col3 = self.listCli.item(i, 'values')
+            #col1 possui a chave para pegar a informações na ficha do client
+        self.show_client(col1) 
 
-    def editarCliente(self, flag):
-        self.limpa_tela_clients()
-        self.listaCli.selection()
+    def edit_client(self, flag):
+        self.clean_screen_clients()
+        self.listCli.selection()
         col1=""
-        for i in self.listaCli.selection():
-            col1, col2, col3 = self.listaCli.item(i, 'values')
-            #col1 possui a chave para pegar a informações na ficha do cliente
+        for i in self.listCli.selection():
+            col1, col2, col3 = self.listCli.item(i, 'values')
+            #col1 possui a chave para pegar a informações na ficha do client
         if col1 != "":
             aux=col1
-            self.cad_clientes(flag, aux)
+            self.cad_clients(flag, aux)
             self.nome_cadClients_entry.insert(END, col1)
             self.cpf_cadClients_entry.insert(END, dictClients[col1][0])
             self.telefone_cadClients_entry.insert(END, dictClients[col1][1])
@@ -142,60 +144,60 @@ class Funcs():
             self.endereco_cadClients_entry.insert(END, dictClients[col1][5])
             self.obs_cadClients_entry.insert(END, dictClients[col1][6])  
 
-    def deleta_cliente(self):
+    def delete_client(self):
         cAux = []
-        cAux, name = self.variaveisCliente()
+        cAux, name = self.variables_client()
         del dictClients[name]
 
         jmanagerC.create_json('data/clients.json', dictClients)
-        self.limpa_tela_cadClients()
-        self.select_lista_clients()
+        self.clean_screen_cadClients()
+        self.select_list_clients()
 
-    def alterar_cliente(self, name):
+    def change_client(self, name):
         if self.nome_cadClients_entry.get() in dictClients:
-            self.addClient()
+            self.add_client()
         else:
             del dictClients[name]
-            self.addClient()
+            self.add_client()
         
-    def busca_cliente(self):
+    def search_client(self):
         nome = self.nome_clients_entry.get()
         cpf = self.cpf_clients_entry.get()
         telefone = self.telefone_clients_entry.get()
-        lista=[]
+        list=[]
         if nome!="":
-            self.listaCli.delete(*self.listaCli.get_children())
+            self.listCli.delete(*self.listCli.get_children())
             for i in dictClients:
                 if re.match(nome, i, re.IGNORECASE):
-                    lista.append(i)
-                    lista.append(dictClients[i][0])
-                    lista.append(dictClients[i][1])
-                    self.listaCli.insert("", END, values=lista)
-                    lista=[] 
+                    list.append(i)
+                    list.append(dictClients[i][0])
+                    list.append(dictClients[i][1])
+                    self.listCli.insert("", END, values=list)
+                    list=[] 
 
         elif cpf!="":
-            self.listaCli.delete(*self.listaCli.get_children())
+            self.listCli.delete(*self.listCli.get_children())
             for i in dictClients:
                 if re.search(cpf, dictClients[i][0], re.IGNORECASE):
-                    lista.append(i)
-                    lista.append(dictClients[i][0])
-                    lista.append(dictClients[i][1])
-                    self.listaCli.insert("", END, values=lista)
-                    lista=[]  
+                    list.append(i)
+                    list.append(dictClients[i][0])
+                    list.append(dictClients[i][1])
+                    self.listCli.insert("", END, values=list)
+                    list=[]  
 
         elif telefone!="":
-            self.listaCli.delete(*self.listaCli.get_children())
+            self.listCli.delete(*self.listCli.get_children())
             for i in dictClients:
                 if re.search(telefone, dictClients[i][1], re.IGNORECASE):
-                    lista.append(i)
-                    lista.append(dictClients[i][0])
-                    lista.append(dictClients[i][1])
-                    self.listaCli.insert("", END, values=lista)
-                    lista=[] 
+                    list.append(i)
+                    list.append(dictClients[i][0])
+                    list.append(dictClients[i][1])
+                    self.listCli.insert("", END, values=list)
+                    list=[] 
         else:
-            self.select_lista_clients()
+            self.select_list_clients()
 
-        self.limpa_tela_clients
+        self.clean_screen_clients
 
 
     
@@ -203,19 +205,19 @@ class Funcs():
 class Application(Funcs, Relatorios):
     def __init__(self):
         self.root = root
-        self.clients_tela()
+        self.clients_screen()
         self.clients_widgets_frame_1()
-        self.clients_lista_frame_2()
-        self.select_lista_clients()
+        self.clients_list_frame_2()
+        self.select_list_clients()
         root.mainloop()
   
-    def clients_tela(self):
-        self.root.title("Clientes")
+    def clients_screen(self):
+        self.root.title("Clients")
         self.root.configure(background= '#582f0e')
-        self.root.geometry('1200x700') #tamanho da tela
+        self.root.geometry('1200x700') #tamanho da screen
         self.root.resizable(True, True) #Horizontal, Vertical
-        self.root.minsize(width=600, height=500) #tamanho das telas
-        #Frames da tela de clientes
+        self.root.minsize(width=600, height=500) #tamanho das screens
+        #Frames da screen de clients
         self.frame_1 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem
         self.frame_2 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
@@ -223,7 +225,7 @@ class Application(Funcs, Relatorios):
   
     def clients_widgets_frame_1(self):
         #Criação da label e entrada do nome
-        self.nome_clients = Label(self.frame_1, text="Nome do Cliente", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.nome_clients = Label(self.frame_1, text="Nome do Client", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.nome_clients.place(relx=0.1, rely=0.1)
         self.nome_clients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.nome_clients_entry.place(relx=0.1, rely=0.21, relwidth=0.8)
@@ -239,43 +241,43 @@ class Application(Funcs, Relatorios):
         self.telefone_clients_entry.place(relx=0.525, rely=0.44, relwidth=0.375)
 
         #limpar
-        self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_clients)
+        self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_clients)
         self.bt_limpar_clients.place(relx=0.15, rely=0.7, relwidth=0.1, relheight=0.15)
-        #buscar
-        self.bt_buscar = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.busca_cliente())
-        self.bt_buscar.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
-        #editar
-        self.bt_editar = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.editarCliente(2))
-        self.bt_editar.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
+        #searchr
+        self.bt_searchr = Button(self.frame_1, text="searchr", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
+        self.bt_searchr.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
+        #edit
+        self.bt_edit = Button(self.frame_1, text="edit", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_client(2))
+        self.bt_edit.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
         #novo
-        self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_clientes(1, ""))
+        self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_clients(1, ""))
         self.bt_novo.place(relx=0.75, rely=0.7, relwidth=0.1, relheight=0.15)
         
-    def clients_lista_frame_2(self):
-        self.listaCli = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3"))
-        self.listaCli.heading("#0", text="")
-        self.listaCli.heading("#1", text="NomeCliente")
-        self.listaCli.heading("#2", text="CPF")
-        self.listaCli.heading("#3", text="Telefone")
+    def clients_list_frame_2(self):
+        self.listCli = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3"))
+        self.listCli.heading("#0", text="")
+        self.listCli.heading("#1", text="NomeClient")
+        self.listCli.heading("#2", text="CPF")
+        self.listCli.heading("#3", text="Telefone")
         
         #tamanho -> 500=100%
-        self.listaCli.column('#0', width=0, stretch=NO)
-        self.listaCli.column("#1", width=300)
-        self.listaCli.column("#2", width=100)
-        self.listaCli.column("#3", width=100)
+        self.listCli.column('#0', width=0, stretch=NO)
+        self.listCli.column("#1", width=300)
+        self.listCli.column("#2", width=100)
+        self.listCli.column("#3", width=100)
 
-        self.listaCli.place(relx=0.01, rely=0.1, relwidth=0.95, relheight=0.85)
+        self.listCli.place(relx=0.01, rely=0.1, relwidth=0.95, relheight=0.85)
 
-        self.scroolLista = Scrollbar(self.frame_2, orient='vertical')
-        self.listaCli.configure(yscroll=self.scroolLista.set)
-        self.scroolLista.place(relx=0.96, rely=0.102, relwidth=0.03, relheight=0.846)
-        self.listaCli.bind("<Double-1>",self.onDubleClick) #Função DoubleClick  
+        self.scroollist = Scrollbar(self.frame_2, orient='vertical')
+        self.listCli.configure(yscroll=self.scroollist.set)
+        self.scroollist.place(relx=0.96, rely=0.102, relwidth=0.03, relheight=0.846)
+        self.listCli.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
    
-    def cad_clientes(self, flag, aux):
+    def cad_clients(self, flag, aux):
         self.root2 = Toplevel()
-        self.root2.title("Cadastro Cliente")
+        self.root2.title("Cadastro Client")
         self.root2.configure(background= '#582f0e')
-        self.root2.geometry('900x600') #tamanho da tela
+        self.root2.geometry('900x600') #tamanho da screen
         self.root2.resizable(False, False) #Horizontal, Vertical
         self.root2.transient(self.root)
         self.root2.focus_force()
@@ -284,11 +286,11 @@ class Application(Funcs, Relatorios):
         self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
-        self.cad_clientes_widgets(flag, aux)
+        self.cad_clients_widgets(flag, aux)
    
-    def cad_clientes_widgets(self, flag, aux):
+    def cad_clients_widgets(self, flag, aux):
         #Criação da label e entrada do nome
-        self.nome_cadClients = Label(self.frame_1, text="Nome do Cliente", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.nome_cadClients = Label(self.frame_1, text="Nome do Client", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.nome_cadClients.place(relx=0.1, rely=0.05)
         self.nome_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.nome_cadClients_entry.place(relx=0.1, rely=0.1, relwidth=0.8)
@@ -330,27 +332,27 @@ class Application(Funcs, Relatorios):
 
         if flag==1:
             #limpar
-            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_cadClients)
+            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #enviar
-            self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.addClient(), self.root2.destroy()])
+            self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_client(), self.root2.destroy()])
             self.bt_cadClients_enviar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
-            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.limpa_tela_cadClients)
+            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
-            #alterar
-            self.bt_alterar = Button(self.frame_1, text="Alterar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.alterar_cliente(aux), self.root2.destroy()])
-            self.bt_alterar.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
+            #change
+            self.bt_change = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root2.destroy()])
+            self.bt_change.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
             #apagar
-            self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.deleta_cliente(), self.root2.destroy()])
+            self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_client(), self.root2.destroy()])
             self.bt_apagar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
    
-    def exibir_cliente(self, key):
+    def show_client(self, key):
         self.root3 = Toplevel()
-        self.root3.title("Informações do Cliente")
+        self.root3.title("Informações do Client")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da tela
+        self.root3.geometry('900x600') #tamanho da screen
         self.root3.resizable(False, False) #Horizontal, Vertical
         self.root3.transient(self.root)
         self.root3.focus_force()
@@ -360,33 +362,33 @@ class Application(Funcs, Relatorios):
         self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
-        self.exibir_cliente_widgets(key)     
+        self.show_client_widgets(key)     
 
-    def exibir_cliente_widgets(self, key):
+    def show_client_widgets(self, key):
         #Nome
-        self.exibir_nome = Label(self.frame_1, text="Nome: "+key, bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_nome.place(relx=0.1, rely=0.1)
+        self.show_nome = Label(self.frame_1, text="Nome: "+key, bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_nome.place(relx=0.1, rely=0.1)
         #cpf
-        self.exibir_cpf = Label(self.frame_1, text="CPF: "+dictClients[key][0], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_cpf.place(relx=0.1, rely=0.2)
+        self.show_cpf = Label(self.frame_1, text="CPF: "+dictClients[key][0], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_cpf.place(relx=0.1, rely=0.2)
         #Telefone
-        self.exibir_telefone = Label(self.frame_1, text="Telefone: "+dictClients[key][1], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_telefone.place(relx=0.5, rely=0.2)
+        self.show_telefone = Label(self.frame_1, text="Telefone: "+dictClients[key][1], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_telefone.place(relx=0.5, rely=0.2)
         #email
-        self.exibir_email = Label(self.frame_1, text="Email: "+dictClients[key][2], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_email.place(relx=0.1, rely=0.3)
+        self.show_email = Label(self.frame_1, text="Email: "+dictClients[key][2], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_email.place(relx=0.1, rely=0.3)
         #Data de nascimento
-        self.exibir_dataNas = Label(self.frame_1, text="Data de Nascimento: "+dictClients[key][3], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_dataNas.place(relx=0.5, rely=0.3)
+        self.show_dataNas = Label(self.frame_1, text="Data de Nascimento: "+dictClients[key][3], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_dataNas.place(relx=0.5, rely=0.3)
         #Nome da mãe
-        self.exibir_nomeMae = Label(self.frame_1, text="Nome da Mãe: "+dictClients[key][4], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_nomeMae.place(relx=0.1, rely=0.4)
+        self.show_nomeMae = Label(self.frame_1, text="Nome da Mãe: "+dictClients[key][4], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_nomeMae.place(relx=0.1, rely=0.4)
         #Endereço
-        self.exibir_endereco = Label(self.frame_1, text="Endereço: "+dictClients[key][5], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.exibir_endereco.place(relx=0.1, rely=0.5)
+        self.show_endereco = Label(self.frame_1, text="Endereço: "+dictClients[key][5], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_endereco.place(relx=0.1, rely=0.5)
         #Observações
-        self.exibir_obs = Label(self.frame_1, text="Observações: "+dictClients[key][6], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD), wraplength=691.2, justify=LEFT)
-        self.exibir_obs.place(relx=0.1, rely=0.6)
+        self.show_obs = Label(self.frame_1, text="Observações: "+dictClients[key][6], bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD), wraplength=691.2, justify=LEFT)
+        self.show_obs.place(relx=0.1, rely=0.6)
 
         self.Menus(key)
 
@@ -402,10 +404,10 @@ class Application(Funcs, Relatorios):
         menubar.add_cascade(label="Opções", menu=filemenu)
         menubar.add_cascade(label="Relatórios", menu=filemenu2)
 
-        filemenu.add_command(label="Limpa Busca", command=self.limpa_tela_clients)
+        filemenu.add_command(label="Limpa search", command=self.clean_screen_clients)
         filemenu.add_command(label="Sair", command=Quit)
 
-        filemenu2.add_command(label="Ficha do Cliente", command=lambda: self.geraRelatCliente(key))
+        filemenu2.add_command(label="Ficha do Client", command=lambda: self.geraRelatClient(key))
 
 
 Application()
