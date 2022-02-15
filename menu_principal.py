@@ -8,20 +8,22 @@ from tkinter import ttk
 import json_manager as json
 import re
 
-from logging import root
-
 import clients as cli
 import products as prod
 
 
-root = Tk()
-clients = cli.Application() 
+
+clients = cli.Application()
 products = prod.Application()
 
+root = Tk()
 
+class Funcs():
+    def startRoot(self):
+        self.root2 = Toplevel()
+        return self.root2
 
-
-class Application():
+class Application(Funcs):
     def __init__(self):
         self.root = root
         self.menu_screen()
@@ -36,6 +38,7 @@ class Application():
         self.root.minsize(width=600, height=500)
         self.frame_1 = Frame(self.root, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)
+        
 
     def menu_widgets_frame_1(self):
         #Criação da label Nova Ótica
@@ -43,10 +46,10 @@ class Application():
         self.codigo_prod.place(relx=0.429, rely=0.2)
 
         #clientes
-        self.bt_clients = Button(self.frame_1, text="Clientes", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: clients.start())
+        self.bt_clients = Button(self.frame_1, text="Clientes", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: clients.start(self.startRoot()))
         self.bt_clients.place(relx=0.35, rely=0.40, relwidth=0.3, relheight=0.1)
         #produtos
-        self.bt_prod = Button(self.frame_1, text="Produtos", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: products.start())
+        self.bt_prod = Button(self.frame_1, text="Produtos", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: products.start(self.startRoot()))
         self.bt_prod.place(relx=0.35, rely=0.51, relwidth=0.3, relheight=0.1)
         #contas a receber
         self.bt_to_recieve = Button(self.frame_1, text="Contas a Receber", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))

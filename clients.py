@@ -1,4 +1,5 @@
 from distutils import command
+from email.mime import application
 from tkinter import *
 from tkinter.filedialog import Directory
 from tkinter.font import BOLD
@@ -23,13 +24,9 @@ jmanagerP = json.JsonManagerProd()
 dictClients = []
 dictClients = jmanagerC.read_json('data/clients.json')
 dictProducts = []
-dictProducts = jmanagerP.read_json('data/products.json')
-
-root2 = Tk()
+dictProducts = jmanagerP.read_json('data/products.json') 
 
 class Relatorios():
-    
-
     def printClient(self):
         webbrowser.open("client.pdf")
 
@@ -85,7 +82,7 @@ class Funcs():
         self.obs_cadClients_entry.delete(0, END)
  
     def variables_client(self):
-        cAux = ["", "", "", "", "", "", ""]
+        cAux = ["", "", "", "", "", "", "", [], 0]
         name = self.nome_cadClients_entry.get()
         cAux[0] = self.cpf_cadClients_entry.get()
         cAux[1] = self.telefone_cadClients_entry.get()
@@ -94,6 +91,7 @@ class Funcs():
         cAux[4] = self.nomeMae_cadClients_entry.get()
         cAux[5] = self.endereco_cadClients_entry.get()
         cAux[6] = self.obs_cadClients_entry.get()
+        cAux[8] = float(0)
         return cAux, name
  
     def add_client(self):
@@ -133,8 +131,7 @@ class Funcs():
             col1, col2, col3 = self.listCli.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do client
         if col1 != "":
-            aux=col1
-            self.cad_clients(flag, aux)
+            self.cad_clients(flag, col1)
             self.nome_cadClients_entry.insert(END, col1)
             self.cpf_cadClients_entry.insert(END, dictClients[col1][0])
             self.telefone_cadClients_entry.insert(END, dictClients[col1][1])
@@ -199,11 +196,60 @@ class Funcs():
 
         self.clean_screen_clients
 
+    def insert_prod(self):
+        self.clean_screen_clients()
+        self.listCli.selection()
+        col1=""
+        for i in self.listCli.selection():
+            col1, col2, col3 = self.listCli.item(i, 'values')
+            #col1 possui a chave para pegar a informações na ficha do cliente
+        if col1 != "":
+            self.insert_prod_to_cli(col1)
 
+    def search_prod(self):
+        codigo = self.codigo_insert_entry.get()
+        list=[]
+        if codigo!="":
+            self.listProd.delete(*self.listProd.get_children())
+            for i in dictProducts:
+                if re.match(codigo, i, re.IGNORECASE):
+                    list.append(i)
+                    list.append(dictProducts[i][0])
+                    list.append(dictProducts[i][1])
+                    list.append(dictProducts[i][2])
+                    list.append(dictProducts[i][3])
+                    self.listProd.insert("", END, values=list)
+                    list=[] 
+        else:
+            self.select_list_prod()
+        self.codigo_insert_entry.delete(0, END)
     
+    def select_list_prod(self):
+        self.listProd.delete(*self.listProd.get_children())
+        list = []
+        for i in dictProducts:
+            list.append(i)
+            list.append(dictProducts[i][0])
+            list.append(dictProducts[i][1])
+            list.append(dictProducts[i][2])
+            list.append(dictProducts[i][3])
+            self.listProd.insert("", END, values=list)
+            list=[]
+    
+    def update_buy_list(self, key, code, quant):
+        dictClients[key][7].append(self.codigo_insert_entry.get())
+        dictClients[key][8] += float(quant)*dictProducts[code][2]
+        if dictProducts[code][1]-int(quant) >= 0:
+            dictProducts[code][1] -= int(quant)
+        else:
+            dictProducts[code][1] = 0
+        jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerP.create_json('data/products.json', dictProducts)
+
+
 
 class Application(Funcs, Relatorios):
-    def start(self):
+    def start(self, root2):
         self.root2 = root2
         self.clients_screen()
         self.clients_widgets_frame_1()
@@ -222,7 +268,7 @@ class Application(Funcs, Relatorios):
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem
         self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_2.place(relx=0.02 , rely=0.5, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem   
-  
+
     def clients_widgets_frame_1(self):
         #Criação da label e entrada do nome
         self.nome_clients = Label(self.frame_1, text="Nome do Client", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
@@ -246,8 +292,11 @@ class Application(Funcs, Relatorios):
         #search
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
         self.bt_search.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
+        #Botão inserir produto na conta do cliente
+        self.bt_insertProd = Button(self.frame_1, text="Lista dos Produtos", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.insert_prod()])
+        self.bt_insertProd.place(relx=0.4125, rely=0.7, relwidth=0.175, relheight=0.15)
         #edit
-        self.bt_edit = Button(self.frame_1, text="edit", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_client(2))
+        self.bt_edit = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_client(2))
         self.bt_edit.place(relx=0.625, rely=0.7, relwidth=0.1, relheight=0.15)
         #novo
         self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_clients(1, ""))
@@ -256,7 +305,7 @@ class Application(Funcs, Relatorios):
     def clients_list_frame_2(self):
         self.listCli = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3"))
         self.listCli.heading("#0", text="")
-        self.listCli.heading("#1", text="NomeClient")
+        self.listCli.heading("#1", text="Nome")
         self.listCli.heading("#2", text="CPF")
         self.listCli.heading("#3", text="Telefone")
         
@@ -279,7 +328,7 @@ class Application(Funcs, Relatorios):
         self.root3.configure(background= '#582f0e')
         self.root3.geometry('900x600') #tamanho da screen
         self.root3.resizable(False, False) #Horizontal, Vertical
-        self.root3.transient(self.root)
+        self.root3.transient(self.root2)
         self.root3.focus_force()
         self.root3.grab_set()
 
@@ -290,7 +339,7 @@ class Application(Funcs, Relatorios):
    
     def cad_clients_widgets(self, flag, aux):
         #Criação da label e entrada do nome
-        self.nome_cadClients = Label(self.frame_1, text="Nome do Client", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.nome_cadClients = Label(self.frame_1, text="Nome do Cliente", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.nome_cadClients.place(relx=0.1, rely=0.05)
         self.nome_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.nome_cadClients_entry.place(relx=0.1, rely=0.1, relwidth=0.8)
@@ -329,37 +378,37 @@ class Application(Funcs, Relatorios):
         self.obs_cadClients.place(relx=0.1, rely=0.55)
         self.obs_cadClients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.obs_cadClients_entry.place(relx=0.1, rely=0.6, relwidth=0.8)
-
+        
         if flag==1:
             #limpar
             self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
-            self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
+            self.bt_limpar_cadClients.place(relx=0.15, rely=0.85, relwidth=0.15, relheight=0.1)
             #enviar
             self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_client(), self.root3.destroy()])
-            self.bt_cadClients_enviar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
+            self.bt_cadClients_enviar.place(relx=0.7, rely=0.85, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
             self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
-            self.bt_limpar_cadClients.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
+            self.bt_limpar_cadClients.place(relx=0.15, rely=0.85, relwidth=0.15, relheight=0.1)
             #change
-            self.bt_change = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root3.destroy()])
-            self.bt_change.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
+            self.bt_change = Button(self.frame_1, text="Alterar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root3.destroy()])
+            self.bt_change.place(relx=0.425, rely=0.85, relwidth=0.15, relheight=0.1)
             #apagar
             self.bt_apagar = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_client(), self.root3.destroy()])
-            self.bt_apagar.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
+            self.bt_apagar.place(relx=0.7, rely=0.85, relwidth=0.15, relheight=0.1)
    
     def show_client(self, key):
-        self.root4 = Toplevel()
-        self.root4.title("Informações do Client")
-        self.root4.configure(background= '#582f0e')
-        self.root4.geometry('900x600') #tamanho da screen
-        self.root4.resizable(False, False) #Horizontal, Vertical
-        self.root4.transient(self.root2)
-        self.root4.focus_force()
-        self.root4.grab_set()
+        self.root3 = Toplevel()
+        self.root3.title("Informações do Cliente")
+        self.root3.configure(background= '#582f0e')
+        self.root3.geometry('900x600') #tamanho da screen
+        self.root3.resizable(False, False) #Horizontal, Vertical
+        self.root3.transient(self.root2)
+        self.root3.focus_force()
+        self.root3.grab_set()
         
-
-        self.frame_1 = Frame(self.root4, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        
+        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
 
         self.show_client_widgets(key)     
@@ -393,8 +442,8 @@ class Application(Funcs, Relatorios):
         self.Menus(key)
 
     def Menus(self, key):
-        menubar = Menu(self.root4)
-        self.root4.config(menu=menubar)
+        menubar = Menu(self.root3)
+        self.root3.config(menu=menubar)
         filemenu = Menu(menubar)
         filemenu2 = Menu(menubar)
 
@@ -404,10 +453,73 @@ class Application(Funcs, Relatorios):
         menubar.add_cascade(label="Opções", menu=filemenu)
         menubar.add_cascade(label="Relatórios", menu=filemenu2)
 
-        filemenu.add_command(label="Limpa search", command=self.clean_screen_clients)
+        filemenu.add_command(label="Limpa busca", command=self.clean_screen_clients)
         filemenu.add_command(label="Sair", command=Quit)
 
-        filemenu2.add_command(label="Ficha do Client", command=lambda: self.geraRelatClient(key))
+        filemenu2.add_command(label="Ficha do Cliente", command=lambda: self.geraRelatClient(key))
+
+    def insert_prod_to_cli(self, key):
+        self.root3 = Toplevel()
+        self.root3.title("Lista de Produtos")
+        self.root3.configure(background= '#582f0e')
+        self.root3.geometry('700x400') #tamanho da screen
+        self.root3.resizable(False, False) #Horizontal, Vertical
+        self.root3.transient(self.root2)
+        self.root3.focus_force()
+        self.root3.grab_set()
+        
+        self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
+       
+        self.insert_prod_to_cli_widgets(key)  
+        self.select_list_prod()
+        
+
+    def insert_prod_to_cli_widgets(self, key):
+        #Nome
+        self.show_nome = Label(self.frame_1, text="Nome: "+key, bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.show_nome.place(relx=0.01, rely=0.01)
+        #Criação da label e entrada do codigo do produto
+        self.codigo_insert = Label(self.frame_1, text="Código", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.codigo_insert.place(relx=0.01, rely=0.12)
+        self.codigo_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.3)
+        #Criação da label e entrada do quantidade
+        self.quantity_insert = Label(self.frame_1, text="Quantidade", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.quantity_insert.place(relx=0.4, rely=0.12)
+        self.quantity_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.quantity_insert_entry.place(relx=0.4, rely=0.2, relwidth=0.3)
+
+        #search
+        self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
+        self.bt_search.place(relx=0.01, rely=0.3, relwidth=0.15, relheight=0.1)
+        #insert
+        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get()), self.root3.destroy()])
+        self.bt_search.place(relx=0.5, rely=0.3, relwidth=0.15, relheight=0.1)
 
 
-# Application()
+        
+
+        self.listProd = ttk.Treeview(self.frame_1, height=3, column=("col1", "col2", "col3", "col4", "col5"))
+        self.listProd.heading("#0", text="")
+        self.listProd.heading("#1", text="Código")
+        self.listProd.heading("#2", text="Produto")
+        self.listProd.heading("#3", text="Quantidade")
+        self.listProd.heading("#4", text="Valor SEM Desconto")
+        self.listProd.heading("#5", text="Valor SEM Desconto")
+        
+        #tamanho -> 500=100%
+        self.listProd.column('#0', width=0, stretch=NO)
+        self.listProd.column("#1", width=50)
+        self.listProd.column("#2", width=150)
+        self.listProd.column("#3", width=100)
+        self.listProd.column("#4", width=100)
+        self.listProd.column("#5", width=100)
+
+        self.listProd.place(relx=0.01, rely=0.5, relwidth=0.95, relheight=0.5)
+
+        self.scroolList = Scrollbar(self.frame_1, orient='vertical')
+        self.listProd.configure(yscroll=self.scroolList.set)
+        self.scroolList.place(relx=0.96, rely=0.5, relwidth=0.03, relheight=0.496)
+        
+

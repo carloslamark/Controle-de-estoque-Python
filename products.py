@@ -20,7 +20,6 @@ jmanagerP = json.JsonManagerProd()
 dictProducts = []
 dictProducts = jmanagerP.read_json('data/products.json')
 
-root2 = Tk()
 
 
 class Funcs():
@@ -130,7 +129,7 @@ class Funcs():
 
 
 class Application(Funcs):
-    def start(self):
+    def start(self, root2):
         self.root2 = root2
         self.prod_screen()
         self.prod_widgets_frame_1()
@@ -163,7 +162,7 @@ class Application(Funcs):
         self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.clean_screen_prod())
         self.bt_limpar.place(relx=0.49, rely=0.3, relwidth=0.1, relheight=0.4)
         #edit
-        self.bt_edit = Button(self.frame_1, text="edit", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_prod(2))
+        self.bt_edit = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_prod(2))
         self.bt_edit.place(relx=0.63, rely=0.3, relwidth=0.1, relheight=0.4)
         #novo
         self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_prod(1, ""))
@@ -176,7 +175,7 @@ class Application(Funcs):
         self.listProd.heading("#2", text="Produto")
         self.listProd.heading("#3", text="Quantidade")
         self.listProd.heading("#4", text="Valor SEM Desconto")
-        self.listProd.heading("#5", text="Valor SEM Desconto")
+        self.listProd.heading("#5", text="Valor COM Desconto")
         
         #tamanho -> 500=100%
         self.listProd.column('#0', width=0, stretch=NO)
