@@ -1,22 +1,4 @@
-from distutils import command
-from email.mime import application
-from tkinter import *
-from tkinter.filedialog import Directory
-from tkinter.font import BOLD
-from ctypes.wintypes import RGB
-from tkinter import ttk
-
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase import ttfonts
-from reportlab.platypus import SimpleDocTemplate, Image
-import webbrowser
-
-import json_manager as json
-import re
-
-
+from import_aux import *
 
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
@@ -236,9 +218,12 @@ class Funcs():
             self.listProd.insert("", END, values=list)
             list=[]
     
-    def update_buy_list(self, key, code, quant):
-        dictClients[key][7].append(self.codigo_insert_entry.get())
-        dictClients[key][8] += float(quant)*dictProducts[code][2]
+    def update_buy_list(self, key, code, quant, disc):
+        if disc == "s" | disc == "sim" | disc == "Sim" | disc == "SIM":
+            dictClients[key][7].append(self.codigo_insert_entry.get()+"s")
+            dictClients[key][8] += float(quant)*dictProducts[code][3]
+        else:
+            dictClients[key][8] += float(quant)*dictProducts[code][2]
         if dictProducts[code][1]-int(quant) >= 0:
             dictProducts[code][1] -= int(quant)
         else:
@@ -483,19 +468,24 @@ class Application(Funcs, Relatorios):
         self.codigo_insert = Label(self.frame_1, text="Código", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.codigo_insert.place(relx=0.01, rely=0.12)
         self.codigo_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.3)
+        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.2)
         #Criação da label e entrada do quantidade
         self.quantity_insert = Label(self.frame_1, text="Quantidade", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.quantity_insert.place(relx=0.4, rely=0.12)
+        self.quantity_insert.place(relx=0.3, rely=0.12)
         self.quantity_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.quantity_insert_entry.place(relx=0.4, rely=0.2, relwidth=0.3)
+        self.quantity_insert_entry.place(relx=0.3, rely=0.2, relwidth=0.2)
+        #Criação da label e entrada do quantidade
+        self.discount_insert = Label(self.frame_1, text="Desconto[s/n]", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.discount_insert.place(relx=0.59, rely=0.12)
+        self.discount_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.discount_insert_entry.place(relx=0.59, rely=0.2, relwidth=0.2)
 
         #search
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
         self.bt_search.place(relx=0.01, rely=0.3, relwidth=0.15, relheight=0.1)
         #insert
-        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get()), self.root3.destroy()])
-        self.bt_search.place(relx=0.5, rely=0.3, relwidth=0.15, relheight=0.1)
+        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get()), self.root3.destroy()])
+        self.bt_search.place(relx=0.64, rely=0.3, relwidth=0.15, relheight=0.1)
 
 
         
