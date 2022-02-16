@@ -1,19 +1,4 @@
-from distutils import command
-from tkinter import *
-from tkinter.filedialog import Directory
-from tkinter.font import BOLD
-from ctypes.wintypes import RGB
-from tkinter import ttk
-
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase import ttfonts
-from reportlab.platypus import SimpleDocTemplate, Image
-import webbrowser
-
-import json_manager as json
-import re
+from import_aux import *
 
 #Iniciando db
 jmanagerP = json.JsonManagerProd()
@@ -72,7 +57,7 @@ class Funcs():
         for i in self.listProd.selection():
             col1, col2, col3, col4, col5 = self.listProd.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do produto
-        self.exibir_prod(col1)
+        self.edit_prod(2)
 
     def edit_prod(self, flag):
         self.clean_screen_prod()
@@ -190,7 +175,7 @@ class Application(Funcs):
         self.scroolList = Scrollbar(self.frame_2, orient='vertical')
         self.listProd.configure(yscroll=self.scroolList.set)
         self.scroolList.place(relx=0.96, rely=0.052, relwidth=0.03, relheight=0.896)
-        # self.listProd.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
+        self.listProd.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
 
     def cad_prod(self, flag, aux):
         self.root3 = Toplevel()
@@ -247,14 +232,10 @@ class Application(Funcs):
             self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #change
-            self.bt_change_cadProd = Button(self.frame_1, text="change", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_prod(aux), self.root3.destroy()])
+            self.bt_change_cadProd = Button(self.frame_1, text="Alterar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_prod(aux), self.root3.destroy()])
             self.bt_change_cadProd.place(relx=0.425, rely=0.7, relwidth=0.15, relheight=0.1)
             #apagar
             self.bt_apagar_cadProd = Button(self.frame_1, text="Apagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.delete_prod(), self.root3.destroy()])
             self.bt_apagar_cadProd.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
-
     
 
-
-
-# Application()

@@ -1,16 +1,6 @@
-from distutils import command
-from tkinter import *
-from tkinter.filedialog import Directory
-from tkinter.font import BOLD
-from ctypes.wintypes import RGB
-from tkinter import ttk
-
-import json_manager as json
-import re
-
+from import_aux import *
 import clients as cli
 import products as prod
-
 
 
 clients = cli.Application()
