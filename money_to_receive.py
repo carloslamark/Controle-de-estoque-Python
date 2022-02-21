@@ -3,23 +3,25 @@ from import_aux import *
 #Iniciando db
 jmanagerP = json.JsonManagerProd()
 jmanagerC = json.JsonManagerClient()
+jmanagerPurch = json.JsonManagerPurchases()
 dictProducts = []
 dictClients = []
+dictPurchases = []
 dictProducts = jmanagerP.read_json('data/products.json')
 dictClients = jmanagerC.read_json('data/clients.json')
+dictPurchases = jmanagerPurch.read_json('data/purchases.json')
 
 
 class Application():
     def start(self, root2):
         self.root2 = root2
-        self.prod_screen()
-        self.prod_widgets_frame_1()
-        self.prod_list_frame_2()
-        self.select_list_prod()
+        self.mtr_screen()
+        self.mtr_widgets_frame_1()
+        self.mtr_list_frame_2()
         root2.mainloop()
     
-    def prod_screen(self):
-            self.root2.title("Estoque")
+    def mtr_screen(self):
+            self.root2.title("Contas a Receber")
             self.root2.configure(background= '#582f0e')
             self.root2.geometry('1200x700')
             self.root2.resizable(True, True)
@@ -29,7 +31,7 @@ class Application():
             self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
             self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.96, relheight=0.76)
     
-    def prod_widgets_frame_1(self):
+    def mtr_widgets_frame_1(self):
         #Criação da label e entrada do Código
         self.codigo_prod = Label(self.frame_1, text="Código do Produto", bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.codigo_prod.place(relx=0.15, rely=0.2)
@@ -49,7 +51,7 @@ class Application():
         self.bt_novo = Button(self.frame_1, text="Novo", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.cad_prod(1, ""))
         self.bt_novo.place(relx=0.74, rely=0.3, relwidth=0.1, relheight=0.4)
 
-    def prod_list_frame_2(self):
+    def mtr_list_frame_2(self):
         self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4", "col5"))
         self.listProd.heading("#0", text="")
         self.listProd.heading("#1", text="Código")

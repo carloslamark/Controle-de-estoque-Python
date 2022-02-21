@@ -1,12 +1,17 @@
 from import_aux import *
 
+
 #Iniciando db
 jmanagerC = json.JsonManagerClient()
 jmanagerP = json.JsonManagerProd()
+jmanagerPurch = json.JsonManagerPurchases()
 dictClients = []
 dictClients = jmanagerC.read_json('data/clients.json')
 dictProducts = []
 dictProducts = jmanagerP.read_json('data/products.json') 
+dictPurchases = []
+dictPurchases = jmanagerPurch.read_json('data/purchases.json')
+
 
 class Relatorios():
     def printClient(self):
@@ -64,7 +69,7 @@ class Funcs():
         self.obs_cadClients_entry.delete(0, END)
  
     def variables_client(self):
-        cAux = ["", "", "", "", "", "", "", [], 0]
+        cAux = ["", "", "", "", "", "", "", 0]
         name = self.nome_cadClients_entry.get()
         cAux[0] = self.cpf_cadClients_entry.get()
         cAux[1] = self.telefone_cadClients_entry.get()
@@ -73,15 +78,16 @@ class Funcs():
         cAux[4] = self.nomeMae_cadClients_entry.get()
         cAux[5] = self.endereco_cadClients_entry.get()
         cAux[6] = self.obs_cadClients_entry.get()
-        cAux[8] = float(0)
         return cAux, name
  
     def add_client(self):
         cAux = []
         cAux, name = self.variables_client()
         dictClients[name] = cAux
+        dictPurchases[name] = {}
 
         jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         self.select_list_clients()
         self.clean_screen_cadClients()       
 
@@ -218,19 +224,41 @@ class Funcs():
             self.listProd.insert("", END, values=list)
             list=[]
     
-    def update_buy_list(self, key, code, quant, disc):
-        if disc == "s" | disc == "sim" | disc == "Sim" | disc == "SIM":
-            dictClients[key][7].append(self.codigo_insert_entry.get()+"s")
-            dictClients[key][8] += float(quant)*dictProducts[code][3]
-        else:
-            dictClients[key][8] += float(quant)*dictProducts[code][2]
-        if dictProducts[code][1]-int(quant) >= 0:
-            dictProducts[code][1] -= int(quant)
-        else:
-            dictProducts[code][1] = 0
-        jmanagerC.create_json('data/clients.json', dictClients)
-        jmanagerP.create_json('data/products.json', dictProducts)
+    def update_buy_list(self, key, code, quant, disc, dCom, parc):
+        if code!="" and disc!="" and dCom!="" and parc!="":
+            purchAux = {}
+            j=0
+            for i in dictPurchases[key].keys():
+                j=i
+            j+=1
+            purchAux[j] = {}
+                
+            if quant == "":
+                quant = 1
+            
+            purchAux[j] = ["", "", 0, "", "n", ""]
+            purchAux[j][0] = code
+            purchAux[j][1] = dCom
+            purchAux[j][2] = int(quant)
+            purchAux[j][5] = parc
+            
+            if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM":
+                purchAux[j][3] = "s"
+                dictClients[key][7] += dictProducts[code][3]*purchAux[j][2]
+            else:
+                purchAux[j][3] = "n"
+                dictClients[key][7] += dictProducts[code][2]*purchAux[j][2]
 
+            if dictProducts[code][1]-int(quant) >= 0:
+                dictProducts[code][1] -= int(quant)
+            else:
+                dictProducts[code][1] = 0
+            
+            dictPurchases[key].update(purchAux) 
+            jmanagerPurch.create_json('data/purchases.json', dictPurchases)
+            jmanagerP.create_json('data/products.json', dictProducts)
+            jmanagerC.create_json('data/clients.json', dictClients)
+            self.root3.destroy()
 
 
 class Application(Funcs, Relatorios):
@@ -278,7 +306,7 @@ class Application(Funcs, Relatorios):
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
         self.bt_search.place(relx=0.275, rely=0.7, relwidth=0.1, relheight=0.15)
         #Botão inserir produto na conta do cliente
-        self.bt_insertProd = Button(self.frame_1, text="Lista dos Produtos", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.insert_prod()])
+        self.bt_insertProd = Button(self.frame_1, text="Adicionar Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.insert_prod()])
         self.bt_insertProd.place(relx=0.4125, rely=0.7, relwidth=0.175, relheight=0.15)
         #edit
         self.bt_edit = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_client(2))
@@ -445,9 +473,9 @@ class Application(Funcs, Relatorios):
 
     def insert_prod_to_cli(self, key):
         self.root3 = Toplevel()
-        self.root3.title("Lista de Produtos")
+        self.root3.title("Adicionar Compra")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('700x400') #tamanho da screen
+        self.root3.geometry('900x600') #tamanho da screen
         self.root3.resizable(False, False) #Horizontal, Vertical
         self.root3.transient(self.root2)
         self.root3.focus_force()
@@ -468,24 +496,34 @@ class Application(Funcs, Relatorios):
         self.codigo_insert = Label(self.frame_1, text="Código", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.codigo_insert.place(relx=0.01, rely=0.12)
         self.codigo_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.2)
+        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.15)
         #Criação da label e entrada do quantidade
         self.quantity_insert = Label(self.frame_1, text="Quantidade", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.quantity_insert.place(relx=0.3, rely=0.12)
+        self.quantity_insert.place(relx=0.21, rely=0.12)
         self.quantity_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.quantity_insert_entry.place(relx=0.3, rely=0.2, relwidth=0.2)
-        #Criação da label e entrada do quantidade
+        self.quantity_insert_entry.place(relx=0.21, rely=0.2, relwidth=0.15)
+        #Criação da label e entrada do desconto
         self.discount_insert = Label(self.frame_1, text="Desconto[s/n]", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.discount_insert.place(relx=0.59, rely=0.12)
+        self.discount_insert.place(relx=0.41, rely=0.12)
         self.discount_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.discount_insert_entry.place(relx=0.59, rely=0.2, relwidth=0.2)
+        self.discount_insert_entry.place(relx=0.41, rely=0.2, relwidth=0.15)
+        #Criação da label e entrada do ddata da compra
+        self.dataCom_insert = Label(self.frame_1, text="Data da Compra", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.dataCom_insert.place(relx=0.61, rely=0.12)
+        self.dataCom_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.dataCom_insert_entry.place(relx=0.61, rely=0.2, relwidth=0.15)
+        #Criação da label e entrada do parcelas
+        self.parcelas_insert = Label(self.frame_1, text="Parcelas", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.parcelas_insert.place(relx=0.81, rely=0.12)
+        self.parcelas_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.parcelas_insert_entry.place(relx=0.81, rely=0.2, relwidth=0.15)
 
         #search
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
-        self.bt_search.place(relx=0.01, rely=0.3, relwidth=0.15, relheight=0.1)
+        self.bt_search.place(relx=0.01, rely=0.3, relwidth=0.2, relheight=0.1)
         #insert
-        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get()), self.root3.destroy()])
-        self.bt_search.place(relx=0.64, rely=0.3, relwidth=0.15, relheight=0.1)
+        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
+        self.bt_search.place(relx=0.76, rely=0.3, relwidth=0.2, relheight=0.1)
 
 
         

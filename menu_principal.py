@@ -5,7 +5,6 @@ import products as prod
 
 clients = cli.Application()
 products = prod.Application()
-
 root = Tk()
 
 class Funcs():
