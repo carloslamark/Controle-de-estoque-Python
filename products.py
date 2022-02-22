@@ -8,6 +8,9 @@ dictProducts = jmanagerP.read_json('data/products.json')
 
 
 class Funcs():
+    def update_dict(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+
     def clean_screen_prod(self):
         self.codigo_prod_entry.delete(0, END)
 
@@ -123,15 +126,15 @@ class Application(Funcs):
         root2.mainloop()
 
     def prod_screen(self):
-            self.root2.title("Estoque")
-            self.root2.configure(background= '#582f0e')
-            self.root2.geometry('1200x700')
-            self.root2.resizable(True, True)
-            self.root2.minsize(width=600, height=500)
-            self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-            self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.16)
-            self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-            self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.96, relheight=0.76)
+        self.root2.title("Estoque")
+        self.root2.configure(background= '#582f0e')
+        self.root2.geometry('1200x700')
+        self.root2.resizable(True, True)
+        self.root2.minsize(width=600, height=500)
+        self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.16)
+        self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.96, relheight=0.76)
     
     def prod_widgets_frame_1(self):
         #Criação da label e entrada do Código

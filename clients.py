@@ -53,6 +53,11 @@ class Relatorios():
 
 
 class Funcs():
+    def update_dict(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
+
     def clean_screen_clients(self):
         self.nome_clients_entry.delete(0, END)
         self.cpf_clients_entry.delete(0, END)
@@ -230,7 +235,7 @@ class Funcs():
             j=0
             for i in dictPurchases[key].keys():
                 j=i
-            j+=1
+            j = int(j)+1
             purchAux[j] = {}
                 
             if quant == "":
@@ -258,6 +263,7 @@ class Funcs():
             jmanagerPurch.create_json('data/purchases.json', dictPurchases)
             jmanagerP.create_json('data/products.json', dictProducts)
             jmanagerC.create_json('data/clients.json', dictClients)
+            self.update_dict()
             self.root3.destroy()
 
 
@@ -280,7 +286,7 @@ class Application(Funcs, Relatorios):
         self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem
         self.frame_2 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-        self.frame_2.place(relx=0.02 , rely=0.5, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem   
+        self.frame_2.place(relx=0.02 , rely=0.5, relwidth=0.96, relheight=0.46)#Trabalha com porcentagem  
 
     def clients_widgets_frame_1(self):
         #Criação da label e entrada do nome

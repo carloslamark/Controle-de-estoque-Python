@@ -1,10 +1,12 @@
 from import_aux import *
 import clients as cli
 import products as prod
+import money_to_receive as mtr
 
 
 clients = cli.Application()
 products = prod.Application()
+mtR = mtr.Application()
 root = Tk()
 
 class Funcs():
@@ -41,7 +43,7 @@ class Application(Funcs):
         self.bt_prod = Button(self.frame_1, text="Produtos", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: products.start(self.startRoot()))
         self.bt_prod.place(relx=0.35, rely=0.51, relwidth=0.3, relheight=0.1)
         #contas a receber
-        self.bt_to_recieve = Button(self.frame_1, text="Contas a Receber", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
+        self.bt_to_recieve = Button(self.frame_1, text="Contas a Receber", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: mtR.start(self.startRoot()))
         self.bt_to_recieve.place(relx=0.35, rely=0.62, relwidth=0.3, relheight=0.1)
         #contas a pagar
         self.bt_to_pay = Button(self.frame_1, text="Contas a Pagar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11))
