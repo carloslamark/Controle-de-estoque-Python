@@ -11,10 +11,10 @@ class Funcs():
     def update_dict(self):
         dictProducts = jmanagerP.read_json('data/products.json')
 
-    def clean_screen_prod(self):
+    def clear_screen_prod(self):
         self.codigo_prod_entry.delete(0, END)
 
-    def clean_screen_cadProd(self):
+    def clear_screen_cadProd(self):
         self.codigo_cadProd_entry.delete(0, END)
         self.produto_cadProd_entry.delete(0, END)
         self.quantidade_cadProd_entry.delete(0, END)
@@ -38,7 +38,7 @@ class Funcs():
 
         jmanagerP.create_json('data/products.json', dictProducts)
         self.select_list_prod()
-        self.clean_screen_cadProd()
+        self.clear_screen_cadProd()
 
     def select_list_prod(self):
         self.listProd.delete(*self.listProd.get_children())
@@ -54,7 +54,7 @@ class Funcs():
             list=[]
 
     def on_duble_click(self, event):
-        self.clean_screen_prod()
+        self.clear_screen_prod()
         self.listProd.selection()
         col1=""
         for i in self.listProd.selection():
@@ -63,7 +63,7 @@ class Funcs():
         self.edit_prod(2)
 
     def edit_prod(self, flag):
-        self.clean_screen_prod()
+        self.clear_screen_prod()
         self.listProd.selection()
         col1=""
         for i in self.listProd.selection():
@@ -84,7 +84,7 @@ class Funcs():
         del dictProducts[codigo]
 
         jmanagerP.create_json('data/products.json', dictProducts)
-        self.clean_screen_cadProd()
+        self.clear_screen_cadProd()
         self.select_list_prod()
 
     def change_prod(self, codigo):
@@ -111,7 +111,7 @@ class Funcs():
         else:
             self.select_list_prod()
 
-        self.clean_screen_prod
+        self.clear_screen_prod
 
 
 
@@ -147,7 +147,7 @@ class Application(Funcs):
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
         self.bt_search.place(relx=0.38, rely=0.3, relwidth=0.1, relheight=0.4)
         #limpar
-        self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.clean_screen_prod())
+        self.bt_limpar = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.clear_screen_prod())
         self.bt_limpar.place(relx=0.49, rely=0.3, relwidth=0.1, relheight=0.4)
         #edit
         self.bt_edit = Button(self.frame_1, text="Editar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.edit_prod(2))
@@ -225,14 +225,14 @@ class Application(Funcs):
 
         if flag==1:
             #limpar
-            self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadProd)
+            self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clear_screen_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #enviar
             self.bt_enviar_cadProd = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_prod(), self.root3.destroy()])
             self.bt_enviar_cadProd.place(relx=0.7, rely=0.7, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
-            self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadProd)
+            self.bt_limpar_cadProd = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clear_screen_cadProd)
             self.bt_limpar_cadProd.place(relx=0.15, rely=0.7, relwidth=0.15, relheight=0.1)
             #change
             self.bt_change_cadProd = Button(self.frame_1, text="Alterar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_prod(aux), self.root3.destroy()])

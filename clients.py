@@ -58,12 +58,12 @@ class Funcs():
         dictClients = jmanagerC.read_json('data/clients.json')
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
 
-    def clean_screen_clients(self):
+    def clear_screen_clients(self):
         self.nome_clients_entry.delete(0, END)
         self.cpf_clients_entry.delete(0, END)
         self.telefone_clients_entry.delete(0, END)
  
-    def clean_screen_cadClients(self):
+    def clear_screen_cadClients(self):
         self.nome_cadClients_entry.delete(0, END)
         self.cpf_cadClients_entry.delete(0, END)
         self.telefone_cadClients_entry.delete(0, END)
@@ -90,11 +90,10 @@ class Funcs():
         cAux, name = self.variables_client()
         dictClients[name] = cAux
         dictPurchases[name] = {}
-
         jmanagerC.create_json('data/clients.json', dictClients)
         jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         self.select_list_clients()
-        self.clean_screen_cadClients()       
+        self.clear_screen_cadClients()       
 
     def select_list_clients(self):
         self.listCli.delete(*self.listCli.get_children())
@@ -108,7 +107,7 @@ class Funcs():
             list=[] 
 
     def on_duble_click(self, event):
-        self.clean_screen_clients()
+        self.clear_screen_clients()
         self.listCli.selection()
         col1=""
         for i in self.listCli.selection():
@@ -117,7 +116,7 @@ class Funcs():
         self.show_client(col1) 
 
     def edit_client(self, flag):
-        self.clean_screen_clients()
+        self.clear_screen_clients()
         self.listCli.selection()
         col1=""
         for i in self.listCli.selection():
@@ -140,7 +139,7 @@ class Funcs():
         del dictClients[name]
 
         jmanagerC.create_json('data/clients.json', dictClients)
-        self.clean_screen_cadClients()
+        self.clear_screen_cadClients()
         self.select_list_clients()
 
     def change_client(self, name):
@@ -187,10 +186,10 @@ class Funcs():
         else:
             self.select_list_clients()
 
-        self.clean_screen_clients
+        self.clear_screen_clients
 
     def insert_prod(self):
-        self.clean_screen_clients()
+        self.clear_screen_clients()
         self.listCli.selection()
         col1=""
         for i in self.listCli.selection():
@@ -290,7 +289,7 @@ class Application(Funcs, Relatorios):
 
     def clients_widgets_frame_1(self):
         #Criação da label e entrada do nome
-        self.nome_clients = Label(self.frame_1, text="Nome do Client", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.nome_clients = Label(self.frame_1, text="Nome do Cliente", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.nome_clients.place(relx=0.1, rely=0.1)
         self.nome_clients_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.nome_clients_entry.place(relx=0.1, rely=0.21, relwidth=0.8)
@@ -306,7 +305,7 @@ class Application(Funcs, Relatorios):
         self.telefone_clients_entry.place(relx=0.525, rely=0.44, relwidth=0.375)
 
         #limpar
-        self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_clients)
+        self.bt_limpar_clients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clear_screen_clients)
         self.bt_limpar_clients.place(relx=0.15, rely=0.7, relwidth=0.1, relheight=0.15)
         #search
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_client())
@@ -400,14 +399,14 @@ class Application(Funcs, Relatorios):
         
         if flag==1:
             #limpar
-            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
+            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clear_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.85, relwidth=0.15, relheight=0.1)
             #enviar
             self.bt_cadClients_enviar = Button(self.frame_1, text="Enviar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.add_client(), self.root3.destroy()])
             self.bt_cadClients_enviar.place(relx=0.7, rely=0.85, relwidth=0.15, relheight=0.1)
         elif flag==2:
             #limpar
-            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clean_screen_cadClients)
+            self.bt_limpar_cadClients = Button(self.frame_1, text="Limpar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=self.clear_screen_cadClients)
             self.bt_limpar_cadClients.place(relx=0.15, rely=0.85, relwidth=0.15, relheight=0.1)
             #change
             self.bt_change = Button(self.frame_1, text="Alterar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda:[self.change_client(aux), self.root3.destroy()])
@@ -472,7 +471,7 @@ class Application(Funcs, Relatorios):
         menubar.add_cascade(label="Opções", menu=filemenu)
         menubar.add_cascade(label="Relatórios", menu=filemenu2)
 
-        filemenu.add_command(label="Limpa busca", command=self.clean_screen_clients)
+        filemenu.add_command(label="Limpa busca", command=self.clear_screen_clients)
         filemenu.add_command(label="Sair", command=Quit)
 
         filemenu2.add_command(label="Ficha do Cliente", command=lambda: self.geraRelatClient(key))
