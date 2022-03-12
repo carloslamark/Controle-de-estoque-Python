@@ -278,7 +278,9 @@ class Application(Funcs, Relatorios):
     def clients_screen(self):
         self.root2.title("Clients")
         self.root2.configure(background= '#582f0e')
-        self.root2.geometry('1200x700') #tamanho da screen
+        width= self.root2.winfo_screenwidth() 
+        height= self.root2.winfo_screenheight()
+        self.root2.geometry("%dx%d+0+0" % (width-100, height-100))#tamanho da screen
         self.root2.resizable(True, True) #Horizontal, Vertical
         self.root2.minsize(width=600, height=500) #tamanho das screens
         #Frames da screen de clients
