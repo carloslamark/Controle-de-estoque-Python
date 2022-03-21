@@ -12,6 +12,8 @@ dictProducts = jmanagerP.read_json('data/products.json')
 dictPurchases = []
 dictPurchases = jmanagerPurch.read_json('data/purchases.json')
 
+dt = str(date.today())
+dateToday = dt[8]+dt[9]+"/"+dt[5]+dt[6]+"/"+dt[0]+dt[1]+dt[2]+dt[3]
 
 class Relatorios():
     def printClient(self):
@@ -72,7 +74,13 @@ class Funcs():
         self.nomeMae_cadClients_entry.delete(0, END)
         self.endereco_cadClients_entry.delete(0, END)
         self.obs_cadClients_entry.delete(0, END)
- 
+
+    def clear_screen_buy_list(self):
+        self.codigo_insert_entry.delete(0, END)
+        self.nomeProd_insert_entry.delete(0, END)
+        self.quantity_insert_entry.delete(0, END)
+        self.discount_insert_entry.delete(0, END)
+
     def variables_client(self):
         cAux = ["", "", "", "", "", "", "", 0]
         name = self.nome_cadClients_entry.get()
@@ -114,6 +122,17 @@ class Funcs():
             col1, col2, col3 = self.listCli.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do client
         self.show_client(col1) 
+
+    def on_duble_click_prod(self, event):
+        self.listProd.selection()
+        self.codigo_insert_entry.delete(0, END)
+        self.nomeProd_insert_entry.delete(0, END)
+        col1=""
+        for i in self.listProd.selection():
+            col1, col2, col3, col4,col5 = self.listProd.item(i, 'values')
+            #col1 possui a chave para pegar a informações na ficha do client
+        self.codigo_insert_entry.insert(0, col1)
+        self.nomeProd_insert_entry.insert(0, dictProducts[col1][0])
 
     def edit_client(self, flag):
         self.clear_screen_clients()
@@ -200,11 +219,23 @@ class Funcs():
 
     def search_prod(self):
         codigo = self.codigo_insert_entry.get()
+        nomeProd = self.nomeProd_insert_entry.get()
         list=[]
         if codigo!="":
             self.listProd.delete(*self.listProd.get_children())
             for i in dictProducts:
                 if re.match(codigo, i, re.IGNORECASE):
+                    list.append(i)
+                    list.append(dictProducts[i][0])
+                    list.append(dictProducts[i][1])
+                    list.append(dictProducts[i][2])
+                    list.append(dictProducts[i][3])
+                    self.listProd.insert("", END, values=list)
+                    list=[] 
+        elif nomeProd!="":
+            self.listProd.delete(*self.listProd.get_children())
+            for i in dictProducts:
+                if re.match(nomeProd, dictProducts[i][0], re.IGNORECASE):
                     list.append(i)
                     list.append(dictProducts[i][0])
                     list.append(dictProducts[i][1])
@@ -227,43 +258,90 @@ class Funcs():
             list.append(dictProducts[i][3])
             self.listProd.insert("", END, values=list)
             list=[]
+
+    def select_list_shop(self, key):
+        self.listShop.delete(*self.listShop.get_children())
+        list = []
+        if key in dictPurchases:
+            for i in dictPurchases[key]:
+                if dictPurchases[key][i][3] == "n":
+                    for j in range(len(dictPurchases[key][i][0])):
+                        list.append(dictProducts[dictPurchases[key][i][0][j]][0])
+                        list.append(dictPurchases[key][i][2][j])
+                        if dictPurchases[key][i][1][j] == "s":
+                            list.append(dictProducts[dictPurchases[key][i][0][j]][3])
+                        else:
+                            list.append(dictProducts[dictPurchases[key][i][0][j]][2])
+                        self.listShop.insert("", END, values=list)
+                        list=[]
+                    break
+        
     
     def update_buy_list(self, key, code, quant, disc, dCom, parc):
-        if code!="" and disc!="" and dCom!="" and parc!="":
-            purchAux = {}
-            j=0
+        if code!="" and disc!="":
+            purchAux={}
+            j=1
+            if quant == "":
+                    quant = 1
+            if parc == "":
+                parc =  1
+            if dCom == "":
+                dCom = str(dateToday)
+            purchAux[j] = [[], [], [], "n", "", ""]
+
+            if key not in dictPurchases:
+                dictPurchases[key] = {}
+                dictPurchases[key].update(purchAux) 
             for i in dictPurchases[key].keys():
                 j=i
-            j = int(j)+1
-            purchAux[j] = {}
-                
-            if quant == "":
-                quant = 1
-            
-            purchAux[j] = ["", "", 0, "", "n", ""]
-            purchAux[j][0] = code
-            purchAux[j][1] = dCom
-            purchAux[j][2] = int(quant)
-            purchAux[j][5] = parc
-            
-            if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM":
-                purchAux[j][3] = "s"
-                dictClients[key][7] += dictProducts[code][3]*purchAux[j][2]
-            else:
-                purchAux[j][3] = "n"
-                dictClients[key][7] += dictProducts[code][2]*purchAux[j][2]
 
-            if dictProducts[code][1]-int(quant) >= 0:
-                dictProducts[code][1] -= int(quant)
+            if dictPurchases[key][j][3] == "s":
+                j = int(j)+1
+                
+                purchAux[j][0].append(code)
+                purchAux[j][2].append(int(quant))
+                purchAux[j][3] ="n"
+                purchAux[j][4] = parc
+                purchAux[j][5] = dCom
+                
+                if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM" or disc == "S":
+                    purchAux[j][1].append("s")
+                    dictClients[key][7] += dictProducts[code][3]*purchAux[j][2]
+                else:
+                    purchAux[j][1].append("n")
+                    dictClients[key][7] += dictProducts[code][2]*purchAux[j][2]
+
+                if dictProducts[code][1]-int(quant) >= 0:
+                    dictProducts[code][1] -= int(quant)
+                else:
+                    dictProducts[code][1] = 0
+
+                dictPurchases[key].update(purchAux) 
             else:
-                dictProducts[code][1] = 0
+                dictPurchases[key][j][0].append(code)
+                dictPurchases[key][j][2].append(int(quant))
+                dictPurchases[key][j][4] = parc
+                dictPurchases[key][j][5] = dCom
+                
+                if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM":
+                    dictPurchases[key][j][1].append("s")
+                    dictClients[key][7] += dictProducts[code][3]*int(quant)
+                else:
+                    dictPurchases[key][j][1].append("n")
+                    dictClients[key][7] += dictProducts[code][2]*int(quant)
+
+                if dictProducts[code][1]-int(quant) >= 0:
+                    dictProducts[code][1] -= int(quant)
+                else:
+                    dictProducts[code][1] = 0
+                
             
-            dictPurchases[key].update(purchAux) 
             jmanagerPurch.create_json('data/purchases.json', dictPurchases)
             jmanagerP.create_json('data/products.json', dictProducts)
             jmanagerC.create_json('data/clients.json', dictClients)
             self.update_dict()
-            self.root3.destroy()
+            self.select_list_shop(key)
+            
 
 
 class Application(Funcs, Relatorios):
@@ -280,7 +358,8 @@ class Application(Funcs, Relatorios):
         self.root2.configure(background= '#582f0e')
         width= self.root2.winfo_screenwidth() 
         height= self.root2.winfo_screenheight()
-        self.root2.geometry("%dx%d+0+0" % (width-100, height-100))#tamanho da screen
+        self.root2.wm_state('zoomed')
+        self.root2.geometry("%dx%d+0+0" % (width, height))#tamanho da screen
         self.root2.resizable(True, True) #Horizontal, Vertical
         self.root2.minsize(width=600, height=500) #tamanho das screens
         #Frames da screen de clients
@@ -346,7 +425,10 @@ class Application(Funcs, Relatorios):
         self.root3 = Toplevel()
         self.root3.title("Cadastro Client")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da screen
+        width= self.root3.winfo_screenwidth() 
+        height= self.root3.winfo_screenheight()
+        self.root3.wm_state('zoomed')
+        self.root3.geometry("%dx%d+0+0" % (width, height))
         self.root3.resizable(False, False) #Horizontal, Vertical
         self.root3.transient(self.root2)
         self.root3.focus_force()
@@ -421,7 +503,10 @@ class Application(Funcs, Relatorios):
         self.root3 = Toplevel()
         self.root3.title("Informações do Cliente")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da screen
+        width= self.root3.winfo_screenwidth() 
+        height= self.root3.winfo_screenheight()
+        self.root3.wm_state('zoomed')
+        self.root3.geometry("%dx%d+0+0" % (width, height))
         self.root3.resizable(False, False) #Horizontal, Vertical
         self.root3.transient(self.root2)
         self.root3.focus_force()
@@ -482,66 +567,58 @@ class Application(Funcs, Relatorios):
         self.root3 = Toplevel()
         self.root3.title("Adicionar Compra")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da screen
+        width= self.root3.winfo_screenwidth() 
+        height= self.root3.winfo_screenheight()
+        self.root3.wm_state('zoomed')
+        self.root3.geometry("%dx%d+0+0" % (width, height))
         self.root3.resizable(False, False) #Horizontal, Vertical
         self.root3.transient(self.root2)
         self.root3.focus_force()
         self.root3.grab_set()
         
         self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-        self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.96)#Trabalha com porcentagem
+        self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.16)#Trabalha com porcentagem
+        self.frame_2 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.48, relheight=0.76)#Trabalha com porcentagem
+        self.frame_3 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
+        self.frame_3.place(relx=0.50 , rely=0.2, relwidth=0.48, relheight=0.76)#Trabalha com porcentagem
        
-        self.insert_prod_to_cli_widgets(key)  
+        self.insert_prod_to_cli_widgetsF1(key)  
+        self.insert_prod_to_cli_widgetsF2(key)
+        self.insert_prod_to_cli_widgetsF3(key)   
         self.select_list_prod()
+        self.select_list_shop(key)
         
 
-    def insert_prod_to_cli_widgets(self, key):
+    def insert_prod_to_cli_widgetsF1(self, key):
         #Nome
         self.show_nome = Label(self.frame_1, text="Nome: "+key, bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.show_nome.place(relx=0.01, rely=0.01)
+        self.show_nome.place(relx=0.2, rely=0.01)
         #Criação da label e entrada do codigo do produto
         self.codigo_insert = Label(self.frame_1, text="Código", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.codigo_insert.place(relx=0.01, rely=0.12)
+        self.codigo_insert.place(relx=0.2, rely=0.4)
         self.codigo_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.codigo_insert_entry.place(relx=0.01, rely=0.2, relwidth=0.15)
-        #Criação da label e entrada do quantidade
-        self.quantity_insert = Label(self.frame_1, text="Quantidade", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.quantity_insert.place(relx=0.21, rely=0.12)
-        self.quantity_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.quantity_insert_entry.place(relx=0.21, rely=0.2, relwidth=0.15)
-        #Criação da label e entrada do desconto
-        self.discount_insert = Label(self.frame_1, text="Desconto[s/n]", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.discount_insert.place(relx=0.41, rely=0.12)
-        self.discount_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.discount_insert_entry.place(relx=0.41, rely=0.2, relwidth=0.15)
-        #Criação da label e entrada do ddata da compra
-        self.dataCom_insert = Label(self.frame_1, text="Data da Compra", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.dataCom_insert.place(relx=0.61, rely=0.12)
-        self.dataCom_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.dataCom_insert_entry.place(relx=0.61, rely=0.2, relwidth=0.15)
-        #Criação da label e entrada do parcelas
-        self.parcelas_insert = Label(self.frame_1, text="Parcelas", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.parcelas_insert.place(relx=0.81, rely=0.12)
-        self.parcelas_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.parcelas_insert_entry.place(relx=0.81, rely=0.2, relwidth=0.15)
-
+        self.codigo_insert_entry.place(relx=0.2, rely=0.6, relwidth=0.15)
+        #Criação da label e entrada do nome do produto
+        self.nomeProd_insert = Label(self.frame_1, text="Produto", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.nomeProd_insert.place(relx=0.5, rely=0.4)
+        self.nomeProd_insert_entry = Entry(self.frame_1, bg='#c2c5aa')
+        self.nomeProd_insert_entry.place(relx=0.5, rely=0.6, relwidth=0.15)
+    
         #search
         self.bt_search = Button(self.frame_1, text="Buscar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.search_prod())
-        self.bt_search.place(relx=0.01, rely=0.3, relwidth=0.2, relheight=0.1)
-        #insert
-        self.bt_search = Button(self.frame_1, text="Inserir", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
-        self.bt_search.place(relx=0.76, rely=0.3, relwidth=0.2, relheight=0.1)
-
-
+        self.bt_search.place(relx=0.7, rely=0.4, relwidth=0.15, relheight=0.4)
         
-
-        self.listProd = ttk.Treeview(self.frame_1, height=3, column=("col1", "col2", "col3", "col4", "col5"))
+        
+        
+    def insert_prod_to_cli_widgetsF2(self, key):
+        self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4", "col5"))
         self.listProd.heading("#0", text="")
         self.listProd.heading("#1", text="Código")
         self.listProd.heading("#2", text="Produto")
         self.listProd.heading("#3", text="Quantidade")
         self.listProd.heading("#4", text="Valor SEM Desconto")
-        self.listProd.heading("#5", text="Valor SEM Desconto")
+        self.listProd.heading("#5", text="Valor COM Desconto")
         
         #tamanho -> 500=100%
         self.listProd.column('#0', width=0, stretch=NO)
@@ -551,10 +628,82 @@ class Application(Funcs, Relatorios):
         self.listProd.column("#4", width=100)
         self.listProd.column("#5", width=100)
 
-        self.listProd.place(relx=0.01, rely=0.5, relwidth=0.95, relheight=0.5)
+        self.listProd.place(relx=0.01, rely=0.02, relwidth=0.95, relheight=0.5)
 
-        self.scroolList = Scrollbar(self.frame_1, orient='vertical')
+        self.scroolList = Scrollbar(self.frame_2, orient='vertical')
         self.listProd.configure(yscroll=self.scroolList.set)
-        self.scroolList.place(relx=0.96, rely=0.5, relwidth=0.03, relheight=0.496)
+        self.scroolList.place(relx=0.96, rely=0.02, relwidth=0.03, relheight=0.496)
+        self.listProd.bind("<Double-1>", self.on_duble_click_prod) #Função DoubleClick 
+
+        #Criação da label e entrada do quantidade
+        self.quantity_insert = Label(self.frame_2, text="Quantidade", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.quantity_insert.place(relx=0.2, rely=0.6)
+        self.quantity_insert_entry = Entry(self.frame_2, bg='#c2c5aa')
+        self.quantity_insert_entry.place(relx=0.2, rely=0.7, relwidth=0.2)
+        self.quantity_insert_entry.insert(0, 1)
+
+        #Criação da label e entrada do desconto
+        self.discount_insert = Label(self.frame_2, text="Desconto[s/n]", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.discount_insert.place(relx=0.6, rely=0.6)
+        self.discount_insert_entry = Entry(self.frame_2, bg='#c2c5aa')
+        self.discount_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.2)
+
+        #insert
+        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get()), self.clear_screen_buy_list()])
+        self.bt_insert.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
+
+    
+    def insert_prod_to_cli_widgetsF3(self, key):
+        #Criação da label e entrada da data da compra
+        self.dataCom_insert = Label(self.frame_3, text="Data da Compra", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.dataCom_insert.place(relx=0.02, rely=0.02)
+        self.dataCom_insert_entry = Entry(self.frame_3, bg='#c2c5aa')
+        self.dataCom_insert_entry.place(relx=0.02, rely=0.1, relwidth=0.15)
+
+        self.listShop = ttk.Treeview(self.frame_3, height=3, column=("col1", "col2", "col3"))
+        self.listShop.heading("#0", text="")
+        self.listShop.heading("#1", text="Produto")
+        self.listShop.heading("#2", text="Quantidade")
+        self.listShop.heading("#3", text="Valor")
+        
+        #tamanho -> 500=100%
+        self.listShop.column('#0', width=0, stretch=NO)
+        self.listShop.column("#1", width=300)
+        self.listShop.column("#2", width=100)
+        self.listShop.column("#3", width=100)
         
 
+        self.listShop.place(relx=0.01, rely=0.2, relwidth=0.95, relheight=0.4)
+
+        self.scroolList = Scrollbar(self.frame_3, orient='vertical')
+        self.listShop.configure(yscroll=self.scroolList.set)
+        self.scroolList.place(relx=0.96, rely=0.2, relwidth=0.03, relheight=0.396)
+
+        #Criação da label do total
+        self.total = Label(self.frame_3, text="Total: R$" + str(dictClients[key][7]), bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.total.place(relx=0.1, rely=0.65)
+
+        #Criação da label e entrada das parcelas
+        self.parcelas_insert = Label(self.frame_3, text="Parcelas", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.parcelas_insert.place(relx=0.6, rely=0.65)
+        self.parcelas_insert_entry = Entry(self.frame_3, bg='#c2c5aa')
+        self.parcelas_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.15)
+        if key in dictPurchases:
+            j=0
+            for i in dictPurchases[key]:
+                j=i
+            if dictPurchases[key][j][3] == "n":
+                self.parcelas_insert_entry.insert(0, dictPurchases[key][j][4])
+                self.dataCom_insert_entry.insert(0, dictPurchases[key][j][5])
+            else:
+                self.parcelas_insert_entry.insert(0, 1)
+                self.dataCom_insert_entry.insert(0, dateToday)
+        else:
+            self.parcelas_insert_entry.insert(0, 1)
+            self.dataCom_insert_entry.insert(0, dateToday)
+
+        #finish
+        self.bt_finish = Button(self.frame_3, text="Finalizar Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.root3.destroy(), self.clear_screen_buy_list()])
+        self.bt_finish.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
+
+        
