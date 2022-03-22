@@ -7,8 +7,8 @@
 -
 <h4>
   Tecnologias utilizadas:<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;🐍 Python(Biblioteca Tkinter)<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;🔑 Json
+  &nbsp;&nbsp;&nbsp;&nbsp;<img style="width:1vw;" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" /> Python(Biblioteca Tkinter)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;{ } Json
 </h4>
 <br><br>
 
