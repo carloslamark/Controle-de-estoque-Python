@@ -36,8 +36,8 @@ class Application(Funcs):
 
     def menu_widgets_frame_1(self):
         #Criação da label Nova Ótica
-        self.codigo_prod = Label(self.frame_1, text="Nova Ótica", bg='#a68a64', fg='#582f0e', font=('Arial', 25, BOLD))
-        self.codigo_prod.place(relx=0.429, rely=0.2)
+        self.codigo_prod = Label(self.frame_1, text="Menu Principal", bg='#a68a64', fg='#582f0e', font=('Arial', 25, BOLD))
+        self.codigo_prod.place(relx=0.415, rely=0.2)
 
         #clientes
         self.bt_clients = Button(self.frame_1, text="Clientes", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: clients.start(self.startRoot()))
