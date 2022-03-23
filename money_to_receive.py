@@ -32,7 +32,7 @@ class Funcs():
                 list.append(dictClients[i][4])
                 list.append(dictClients[i][0])
                 list.append(dictClients[i][1])
-                list.append(dictClients[i][7])
+                list.append(round(dictClients[i][7], 3))
                 self.listMtr.insert("", END, values=list)
                 list=[]
     
@@ -139,6 +139,8 @@ class Funcs():
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         topay = self.pagando_mtr_entry.get()
         dictClients[key][7] = float(dictClients[key][7]) - float(topay)
+        if dictClients[key][7]< 0.1:
+            dictClients[key][7] = 0
         dictPurchases[key][purchCode][4] = self.parcelas_mtr_entry.get()
         if float(dictClients[key][7]) < 0:
             print("Enviar valor que sobrou para o money_to_pay")
@@ -236,6 +238,7 @@ class Application(Funcs):
         # self.listMtr.bind("<Double-1>",self.on_duble_click) #Função DoubleClick
 
     def mtr_finish(self, key, purchCode):
+        self.select_list_mtr()
         dictProducts = jmanagerP.read_json('data/products.json')
         dictClients = jmanagerC.read_json('data/clients.json')
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
@@ -342,12 +345,6 @@ class Application(Funcs):
         self.pagando_mtr_entry = Entry(self.frame_3, bg='#c2c5aa')
         self.pagando_mtr_entry.place(relx=0.3, rely=0.6, relwidth=0.1)
         self.pagando_mtr_entry.insert(0, parcValue)
-
-        #Fazer agora:
-        #Confirmar pagamento atualizando o número de parcelas colocados no insert e atualizar 
-        # o dictPurchases ao mesmo tempo.
-        #No final, atualizar todos os dicionarios!
-
 
         #fechar
         self.bt_close = Button(self.frame_3, text="Fechar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.root3.destroy())
