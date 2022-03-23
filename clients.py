@@ -138,7 +138,7 @@ class Funcs():
         self.nomeProd_insert_entry.delete(0, END)
         col1=""
         for i in self.listProd.selection():
-            col1, col2, col3, col4,col5 = self.listProd.item(i, 'values')
+            col1, col2, col3, col4 = self.listProd.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do client
         self.codigo_insert_entry.insert(0, col1)
         self.nomeProd_insert_entry.insert(0, dictProducts[col1][0])
@@ -261,7 +261,6 @@ class Funcs():
                     list.append(dictProducts[i][0])
                     list.append(dictProducts[i][1])
                     list.append(dictProducts[i][2])
-                    list.append(dictProducts[i][3])
                     self.listProd.insert("", END, values=list)
                     list=[] 
         elif nomeProd!="":
@@ -272,7 +271,6 @@ class Funcs():
                     list.append(dictProducts[i][0])
                     list.append(dictProducts[i][1])
                     list.append(dictProducts[i][2])
-                    list.append(dictProducts[i][3])
                     self.listProd.insert("", END, values=list)
                     list=[] 
         else:
@@ -290,7 +288,6 @@ class Funcs():
             list.append(dictProducts[i][0])
             list.append(dictProducts[i][1])
             list.append(dictProducts[i][2])
-            list.append(dictProducts[i][3])
             self.listProd.insert("", END, values=list)
             list=[]
 
@@ -300,16 +297,17 @@ class Funcs():
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.listShop.delete(*self.listShop.get_children())
         list = []
+        aux = 0
         if key in dictPurchases:
             for i in dictPurchases[key]:
                 if dictPurchases[key][i][3] == "n":
                     for j in range(len(dictPurchases[key][i][0])):
                         list.append(dictProducts[dictPurchases[key][i][0][j]][0])
                         list.append(dictPurchases[key][i][2][j])
-                        if dictPurchases[key][i][1][j] == "s":
-                            list.append(dictProducts[dictPurchases[key][i][0][j]][3])
-                        else:
-                            list.append(dictProducts[dictPurchases[key][i][0][j]][2])
+                        aux = str((dictPurchases[key][i][1][j])*100) +"%"
+                        list.append(aux)
+                        list.append(dictProducts[dictPurchases[key][i][0][j]][2] - (dictProducts[dictPurchases[key][i][0][j]][2]*dictPurchases[key][i][1][j]))
+                        
                         self.listShop.insert("", END, values=list)
                         list=[]
                     break
@@ -327,8 +325,7 @@ class Funcs():
                 parc =  1
             if dCom == "":
                 dCom = str(dateToday)
-            
-
+            disc = round((disc/100),3)
             if key not in dictPurchases:
                 dictPurchases[key] = {}
                 dictPurchases[key]["1"] = [[], [], [], "n", "", ""]
@@ -340,17 +337,14 @@ class Funcs():
                 j = int(j)+1
                 dictPurchases[key][j] = [[], [], [], "n", "", ""]
                 dictPurchases[key][j][0].append(code)
+                dictPurchases[key][j][1].append(disc)
                 dictPurchases[key][j][2].append(int(quant))
                 dictPurchases[key][j][3] ="n"
                 dictPurchases[key][j][4] = parc
                 dictPurchases[key][j][5] = dCom
-                
-                if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM" or disc == "S":
-                    dictPurchases[key][j][1].append("s")
-                    dictClients[key][7] += dictProducts[code][3]*int(quant)
-                else:
-                    dictPurchases[key][j][1].append("n")
-                    dictClients[key][7] += dictProducts[code][2]*int(quant)
+                if disc == 0:
+                    disc = 1
+                dictClients[key][7] += dictProducts[code][2] - (dictProducts[code][2]*int(quant)*disc)
 
                 if dictProducts[code][1]-int(quant) >= 0:
                     dictProducts[code][1] -= int(quant)
@@ -358,16 +352,13 @@ class Funcs():
                     dictProducts[code][1] = 0 
             else:
                 dictPurchases[key][j][0].append(code)
+                dictPurchases[key][j][1].append(disc)
                 dictPurchases[key][j][2].append(int(quant))
                 dictPurchases[key][j][4] = parc
                 dictPurchases[key][j][5] = dCom
-                
-                if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM":
-                    dictPurchases[key][j][1].append("s")
-                    dictClients[key][7] += dictProducts[code][3]*int(quant)
-                else:
-                    dictPurchases[key][j][1].append("n")
-                    dictClients[key][7] += dictProducts[code][2]*int(quant)
+                if disc == 0:
+                    disc = 1
+                dictClients[key][7] += dictProducts[code][2] - (dictProducts[code][2]*int(quant)*disc)
 
                 if dictProducts[code][1]-int(quant) >= 0:
                     dictProducts[code][1] -= int(quant)
@@ -662,21 +653,20 @@ class Application(Funcs, Relatorios):
         
         
     def insert_prod_to_cli_widgetsF2(self, key):
-        self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4", "col5"))
+        self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
         self.listProd.heading("#0", text="")
         self.listProd.heading("#1", text="Código")
         self.listProd.heading("#2", text="Produto")
         self.listProd.heading("#3", text="Quantidade")
-        self.listProd.heading("#4", text="Valor SEM Desconto")
-        self.listProd.heading("#5", text="Valor COM Desconto")
+        self.listProd.heading("#4", text="Valor")
         
         #tamanho -> 500=100%
         self.listProd.column('#0', width=0, stretch=NO)
-        self.listProd.column("#1", width=50)
-        self.listProd.column("#2", width=150)
-        self.listProd.column("#3", width=100)
-        self.listProd.column("#4", width=100)
-        self.listProd.column("#5", width=100)
+        self.listProd.column("#1", width=75)
+        self.listProd.column("#2", width=175)
+        self.listProd.column("#3", width=125)
+        self.listProd.column("#4", width=125)
+
 
         self.listProd.place(relx=0.01, rely=0.02, relwidth=0.95, relheight=0.5)
 
@@ -693,33 +683,38 @@ class Application(Funcs, Relatorios):
         self.quantity_insert_entry.insert(0, 1)
 
         #Criação da label e entrada do desconto
-        self.discount_insert = Label(self.frame_2, text="Desconto[s/n]", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        self.discount_insert = Label(self.frame_2, text="Desconto(Digite o Número)", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.discount_insert.place(relx=0.6, rely=0.6)
         self.discount_insert_entry = Entry(self.frame_2, bg='#c2c5aa')
         self.discount_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.2)
 
         #insert
-        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
+        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), float(self.discount_insert_entry.get()), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
         self.bt_insert.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
 
     
     def insert_prod_to_cli_widgetsF3(self, key):
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictProducts = jmanagerP.read_json('data/products.json') 
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         #Criação da label e entrada da data da compra
         self.dataCom_insert = Label(self.frame_3, text="Data da Compra", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.dataCom_insert.place(relx=0.02, rely=0.02)
         self.dataCom_insert_entry = Entry(self.frame_3, bg='#c2c5aa')
         self.dataCom_insert_entry.place(relx=0.02, rely=0.1, relwidth=0.15)
 
-        self.listShop = ttk.Treeview(self.frame_3, height=3, column=("col1", "col2", "col3"))
+        self.listShop = ttk.Treeview(self.frame_3, height=3, column=("col1", "col2", "col3", "col4"))
         self.listShop.heading("#0", text="")
         self.listShop.heading("#1", text="Produto")
         self.listShop.heading("#2", text="Quantidade")
-        self.listShop.heading("#3", text="Valor")
+        self.listShop.heading("#3", text="Desconto")
+        self.listShop.heading("#4", text="Valor")
         
         #tamanho -> 500=100%
         self.listShop.column('#0', width=0, stretch=NO)
-        self.listShop.column("#1", width=300)
+        self.listShop.column("#1", width=200)
         self.listShop.column("#2", width=100)
+        self.listShop.column("#3", width=100)
         self.listShop.column("#3", width=100)
         
         self.listShop.place(relx=0.01, rely=0.2, relwidth=0.95, relheight=0.4)

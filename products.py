@@ -16,16 +16,13 @@ class Funcs():
         self.produto_cadProd_entry.delete(0, END)
         self.quantidade_cadProd_entry.delete(0, END)
         self.semD_cadProd_entry.delete(0, END)
-        self.comD_cadProd_entry.delete(0, END)
          
     def variables_prod(self):
         pAux = ["", 0, 0, 0]
         codigo = self.codigo_cadProd_entry.get()
         pAux[0] = self.produto_cadProd_entry.get()
         pAux[1] = int(self.quantidade_cadProd_entry.get())
-        pAux[2] = float(self.semD_cadProd_entry.get())
-        pAux[3] = float(self.comD_cadProd_entry.get())
-        
+        pAux[2] = float(self.semD_cadProd_entry.get())   
         return pAux, codigo
     
     def add_prod(self):
@@ -47,7 +44,6 @@ class Funcs():
             list.append(dictProducts[i][0])
             list.append(dictProducts[i][1])
             list.append(dictProducts[i][2])
-            list.append(dictProducts[i][3])
             self.listProd.insert("", END, values=list)
             list=[]
 
@@ -57,7 +53,7 @@ class Funcs():
         self.listProd.selection()
         col1=""
         for i in self.listProd.selection():
-            col1, col2, col3, col4, col5 = self.listProd.item(i, 'values')
+            col1, col2, col3, col4 = self.listProd.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do produto
         self.edit_prod(2)
 
@@ -67,7 +63,7 @@ class Funcs():
         self.listProd.selection()
         col1=""
         for i in self.listProd.selection():
-            col1, col2, col3, col4, col5 = self.listProd.item(i, 'values')
+            col1, col2, col3, col4 = self.listProd.item(i, 'values')
             #col1 possui a chave para pegar a informações na ficha do produto
         if col1 != "":
             aux=col1
@@ -76,7 +72,6 @@ class Funcs():
             self.produto_cadProd_entry.insert(END, dictProducts[col1][0])
             self.quantidade_cadProd_entry.insert(END, dictProducts[col1][1])
             self.semD_cadProd_entry.insert(END, dictProducts[col1][2])
-            self.comD_cadProd_entry.insert(END, dictProducts[col1][3])
         jmanagerP.create_json('data/products.json', dictProducts)
              
     def delete_prod(self):
@@ -110,7 +105,6 @@ class Funcs():
                     list.append(dictProducts[i][0])
                     list.append(dictProducts[i][1])
                     list.append(dictProducts[i][2])
-                    list.append(dictProducts[i][3])
                     self.listProd.insert("", END, values=list)
                     list=[] 
         else:
@@ -165,21 +159,20 @@ class Application(Funcs):
         self.bt_novo.place(relx=0.74, rely=0.3, relwidth=0.1, relheight=0.4)
 
     def prod_list_frame_2(self):
-        self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4", "col5"))
+        self.listProd = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
         self.listProd.heading("#0", text="")
         self.listProd.heading("#1", text="Código")
         self.listProd.heading("#2", text="Produto")
         self.listProd.heading("#3", text="Quantidade")
-        self.listProd.heading("#4", text="Valor SEM Desconto")
-        self.listProd.heading("#5", text="Valor COM Desconto")
+        self.listProd.heading("#4", text="Valor")
         
         #tamanho -> 500=100%
         self.listProd.column('#0', width=0, stretch=NO)
-        self.listProd.column("#1", width=50)
-        self.listProd.column("#2", width=150)
-        self.listProd.column("#3", width=100)
-        self.listProd.column("#4", width=100)
-        self.listProd.column("#5", width=100)
+        self.listProd.column("#1", width=75)
+        self.listProd.column("#2", width=175)
+        self.listProd.column("#3", width=125)
+        self.listProd.column("#4", width=125)
+        
 
         self.listProd.place(relx=0.01, rely=0.05, relwidth=0.95, relheight=0.9)
 
@@ -222,16 +215,11 @@ class Application(Funcs):
         self.quantidade_cadProd.place(relx=0.525, rely=0.15)
         self.quantidade_cadProd_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.quantidade_cadProd_entry.place(relx=0.525, rely=0.2, relwidth=0.375)
-        #Criação da label e entrada do Valor SEM desconto
-        self.semD_cadProd = Label(self.frame_1, text="Valor SEM desconto", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
+        #Criação da label e entrada do Valor
+        self.semD_cadProd = Label(self.frame_1, text="Valor", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
         self.semD_cadProd.place(relx=0.1, rely=0.25)
         self.semD_cadProd_entry = Entry(self.frame_1, bg='#c2c5aa')
         self.semD_cadProd_entry.place(relx=0.1, rely=0.3, relwidth=0.375)
-        #Criação da label e entrada do Valor COM desconto
-        self.comD_cadProd = Label(self.frame_1, text="Valor COM desconto", bg='#a68a64', fg='#582f0e', font=('Arial', 12, BOLD))
-        self.comD_cadProd.place(relx=0.525, rely=0.25)
-        self.comD_cadProd_entry = Entry(self.frame_1, bg='#c2c5aa')
-        self.comD_cadProd_entry.place(relx=0.525, rely=0.3, relwidth=0.375)
         
 
         if flag==1:
