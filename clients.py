@@ -1,3 +1,4 @@
+from tarfile import ENCODING
 from import_aux import *
 
 
@@ -6,10 +7,10 @@ jmanagerC = json.JsonManagerClient()
 jmanagerP = json.JsonManagerProd()
 jmanagerPurch = json.JsonManagerPurchases()
 dictClients = []
-dictClients = jmanagerC.read_json('data/clients.json')
 dictProducts = []
-dictProducts = jmanagerP.read_json('data/products.json') 
 dictPurchases = []
+dictClients = jmanagerC.read_json('data/clients.json')
+dictProducts = jmanagerP.read_json('data/products.json') 
 dictPurchases = jmanagerPurch.read_json('data/purchases.json')
 
 dt = str(date.today())
@@ -55,11 +56,6 @@ class Relatorios():
 
 
 class Funcs():
-    def update_dict(self):
-        dictProducts = jmanagerP.read_json('data/products.json')
-        dictClients = jmanagerC.read_json('data/clients.json')
-        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
-
     def clear_screen_clients(self):
         self.nome_clients_entry.delete(0, END)
         self.cpf_clients_entry.delete(0, END)
@@ -79,6 +75,7 @@ class Funcs():
         self.codigo_insert_entry.delete(0, END)
         self.nomeProd_insert_entry.delete(0, END)
         self.quantity_insert_entry.delete(0, END)
+        self.quantity_insert_entry.insert(0, 1)
         self.discount_insert_entry.delete(0, END)
 
     def variables_client(self):
@@ -94,18 +91,24 @@ class Funcs():
         return cAux, name
  
     def add_client(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         cAux = []
         cAux, name = self.variables_client()
         dictClients[name] = cAux
         dictPurchases[name] = {}
         jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerP.create_json('data/products.json', dictProducts)
         jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         self.select_list_clients()
         self.clear_screen_cadClients()       
 
     def select_list_clients(self):
         self.listCli.delete(*self.listCli.get_children())
-        
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         list = []
         for i in dictClients:
             list.append(i)
@@ -115,6 +118,9 @@ class Funcs():
             list=[] 
 
     def on_duble_click(self, event):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.clear_screen_clients()
         self.listCli.selection()
         col1=""
@@ -124,6 +130,9 @@ class Funcs():
         self.show_client(col1) 
 
     def on_duble_click_prod(self, event):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.listProd.selection()
         self.codigo_insert_entry.delete(0, END)
         self.nomeProd_insert_entry.delete(0, END)
@@ -135,6 +144,9 @@ class Funcs():
         self.nomeProd_insert_entry.insert(0, dictProducts[col1][0])
 
     def edit_client(self, flag):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.clear_screen_clients()
         self.listCli.selection()
         col1=""
@@ -153,22 +165,36 @@ class Funcs():
             self.obs_cadClients_entry.insert(END, dictClients[col1][6])  
 
     def delete_client(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         cAux = []
         cAux, name = self.variables_client()
         del dictClients[name]
 
         jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerP.create_json('data/products.json', dictProducts)
+        jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         self.clear_screen_cadClients()
         self.select_list_clients()
 
     def change_client(self, name):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         if self.nome_cadClients_entry.get() in dictClients:
             self.add_client()
         else:
             del dictClients[name]
             self.add_client()
+        jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerP.create_json('data/products.json', dictProducts)
+        jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         
     def search_client(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         nome = self.nome_clients_entry.get()
         cpf = self.cpf_clients_entry.get()
         telefone = self.telefone_clients_entry.get()
@@ -208,6 +234,9 @@ class Funcs():
         self.clear_screen_clients
 
     def insert_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.clear_screen_clients()
         self.listCli.selection()
         col1=""
@@ -218,6 +247,9 @@ class Funcs():
             self.insert_prod_to_cli(col1)
 
     def search_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         codigo = self.codigo_insert_entry.get()
         nomeProd = self.nomeProd_insert_entry.get()
         list=[]
@@ -248,6 +280,9 @@ class Funcs():
         self.codigo_insert_entry.delete(0, END)
     
     def select_list_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.listProd.delete(*self.listProd.get_children())
         list = []
         for i in dictProducts:
@@ -260,6 +295,9 @@ class Funcs():
             list=[]
 
     def select_list_shop(self, key):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.listShop.delete(*self.listShop.get_children())
         list = []
         if key in dictPurchases:
@@ -278,46 +316,46 @@ class Funcs():
         
     
     def update_buy_list(self, key, code, quant, disc, dCom, parc):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         if code!="" and disc!="":
-            purchAux={}
             j=1
             if quant == "":
-                    quant = 1
+                quant = 1
             if parc == "":
                 parc =  1
             if dCom == "":
                 dCom = str(dateToday)
-            purchAux[j] = [[], [], [], "n", "", ""]
+            
 
             if key not in dictPurchases:
                 dictPurchases[key] = {}
-                dictPurchases[key] = purchAux 
+                dictPurchases[key]["1"] = [[], [], [], "n", "", ""]
 
             for i in dictPurchases[key].keys():
                 j=i
-
+           
             if dictPurchases[key][j][3] == "s":
                 j = int(j)+1
-                
-                purchAux[j][0].append(code)
-                purchAux[j][2].append(int(quant))
-                purchAux[j][3] ="n"
-                purchAux[j][4] = parc
-                purchAux[j][5] = dCom
+                dictPurchases[key][j] = [[], [], [], "n", "", ""]
+                dictPurchases[key][j][0].append(code)
+                dictPurchases[key][j][2].append(int(quant))
+                dictPurchases[key][j][3] ="n"
+                dictPurchases[key][j][4] = parc
+                dictPurchases[key][j][5] = dCom
                 
                 if disc == "s" or disc == "sim" or disc == "Sim" or disc == "SIM" or disc == "S":
-                    purchAux[j][1].append("s")
-                    dictClients[key][7] += dictProducts[code][3]*purchAux[j][2]
+                    dictPurchases[key][j][1].append("s")
+                    dictClients[key][7] += dictProducts[code][3]*int(quant)
                 else:
-                    purchAux[j][1].append("n")
-                    dictClients[key][7] += dictProducts[code][2]*purchAux[j][2]
+                    dictPurchases[key][j][1].append("n")
+                    dictClients[key][7] += dictProducts[code][2]*int(quant)
 
                 if dictProducts[code][1]-int(quant) >= 0:
                     dictProducts[code][1] -= int(quant)
                 else:
-                    dictProducts[code][1] = 0
-
-                dictPurchases[key].update(purchAux) 
+                    dictProducts[code][1] = 0 
             else:
                 dictPurchases[key][j][0].append(code)
                 dictPurchases[key][j][2].append(int(quant))
@@ -336,11 +374,10 @@ class Funcs():
                 else:
                     dictProducts[code][1] = 0
                 
-            
-            jmanagerPurch.create_json('data/purchases.json', dictPurchases)
-            jmanagerP.create_json('data/products.json', dictProducts)
+            self.clear_screen_buy_list()
             jmanagerC.create_json('data/clients.json', dictClients)
-            self.update_dict()
+            jmanagerP.create_json('data/products.json', dictProducts)
+            jmanagerPurch.create_json('data/purchases.json', dictPurchases)
             self.select_list_shop(key)
             
 
@@ -355,6 +392,9 @@ class Application(Funcs, Relatorios):
         root2.mainloop()
   
     def clients_screen(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root2.title("Clients")
         self.root2.configure(background= '#582f0e')
         width= self.root2.winfo_screenwidth() 
@@ -423,6 +463,9 @@ class Application(Funcs, Relatorios):
         self.listCli.bind("<Double-1>",self.on_duble_click) #Função DoubleClick  
    
     def cad_clients(self, flag, aux):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root3 = Toplevel()
         self.root3.title("Cadastro Client")
         self.root3.configure(background= '#582f0e')
@@ -501,6 +544,9 @@ class Application(Funcs, Relatorios):
             self.bt_apagar.place(relx=0.7, rely=0.85, relwidth=0.15, relheight=0.1)
    
     def show_client(self, key):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root3 = Toplevel()
         self.root3.title("Informações do Cliente")
         self.root3.configure(background= '#582f0e')
@@ -565,6 +611,9 @@ class Application(Funcs, Relatorios):
         filemenu2.add_command(label="Ficha do Cliente", command=lambda: self.geraRelatClient(key))
 
     def insert_prod_to_cli(self, key):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root3 = Toplevel()
         self.root3.title("Adicionar Compra")
         self.root3.configure(background= '#582f0e')
@@ -650,7 +699,7 @@ class Application(Funcs, Relatorios):
         self.discount_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.2)
 
         #insert
-        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get()), self.clear_screen_buy_list()])
+        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), self.discount_insert_entry.get(), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
         self.bt_insert.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
 
     
@@ -703,7 +752,7 @@ class Application(Funcs, Relatorios):
             self.dataCom_insert_entry.insert(0, dateToday)
 
         #finish
-        self.bt_finish = Button(self.frame_3, text="Finalizar Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.root3.destroy(), self.clear_screen_buy_list()])
+        self.bt_finish = Button(self.frame_3, text="Finalizar Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.clear_screen_buy_list(), self.root3.destroy()])
         self.bt_finish.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
 
         

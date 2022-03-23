@@ -8,9 +8,6 @@ dictProducts = jmanagerP.read_json('data/products.json')
 
 
 class Funcs():
-    def update_dict(self):
-        dictProducts = jmanagerP.read_json('data/products.json')
-
     def clear_screen_prod(self):
         self.codigo_prod_entry.delete(0, END)
 
@@ -32,17 +29,18 @@ class Funcs():
         return pAux, codigo
     
     def add_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
         pAux = []
         pAux, codigo = self.variables_prod()
         dictProducts[codigo] = pAux
-
         jmanagerP.create_json('data/products.json', dictProducts)
         self.select_list_prod()
         self.clear_screen_cadProd()
 
     def select_list_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
         self.listProd.delete(*self.listProd.get_children())
-        
+        jmanagerP.create_json('data/products.json', dictProducts)
         list = []
         for i in dictProducts:
             list.append(i)
@@ -54,6 +52,7 @@ class Funcs():
             list=[]
 
     def on_duble_click(self, event):
+        dictProducts = jmanagerP.read_json('data/products.json')
         self.clear_screen_prod()
         self.listProd.selection()
         col1=""
@@ -63,6 +62,7 @@ class Funcs():
         self.edit_prod(2)
 
     def edit_prod(self, flag):
+        dictProducts = jmanagerP.read_json('data/products.json')
         self.clear_screen_prod()
         self.listProd.selection()
         col1=""
@@ -77,8 +77,10 @@ class Funcs():
             self.quantidade_cadProd_entry.insert(END, dictProducts[col1][1])
             self.semD_cadProd_entry.insert(END, dictProducts[col1][2])
             self.comD_cadProd_entry.insert(END, dictProducts[col1][3])
+        jmanagerP.create_json('data/products.json', dictProducts)
              
     def delete_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
         pAux = []
         pAux, codigo = self.variables_prod()
         del dictProducts[codigo]
@@ -88,13 +90,16 @@ class Funcs():
         self.select_list_prod()
 
     def change_prod(self, codigo):
+        dictProducts = jmanagerP.read_json('data/products.json')
         if self.codigo_cadProd_entry.get() in dictProducts:
             self.add_prod()
         else:
             del dictProducts[codigo]
             self.add_prod()
+        jmanagerP.create_json('data/products.json', dictProducts)
 
     def search_prod(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
         codigo = self.codigo_prod_entry.get()
         list=[]
         if codigo!="":
@@ -110,7 +115,7 @@ class Funcs():
                     list=[] 
         else:
             self.select_list_prod()
-
+        jmanagerP.create_json('data/products.json', dictProducts)
         self.clear_screen_prod
 
 

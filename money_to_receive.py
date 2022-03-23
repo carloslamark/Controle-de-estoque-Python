@@ -22,7 +22,9 @@ class Funcs():
 
     def select_list_mtr(self):
         self.listMtr.delete(*self.listMtr.get_children())
+        dictProducts = jmanagerP.read_json('data/products.json')
         dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         list = []
         for i in dictClients:
             if dictClients[i][7] != 0:
@@ -36,6 +38,8 @@ class Funcs():
     
     def select_list_mtr2(self, name, purchCode):
         self.listMtr2.delete(*self.listMtr2.get_children())
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         list = []
         aux = []
@@ -49,8 +53,12 @@ class Funcs():
                 list.append(dictProducts[aux[i]][2])
             self.listMtr2.insert("", END, values=list)
             list = []
+        
     
     def search_mtr(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         nome = self.nome_mtr_entry.get()
         cpf = self.cpf_mtr_entry.get()
         nomeMae = self.nomeMae_mtr_entry.get()
@@ -109,6 +117,9 @@ class Funcs():
         self.clear_screen()
 
     def open_finish_mtr(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.clear_screen()
         self.listMtr.selection()
         col1=""
@@ -122,15 +133,20 @@ class Funcs():
                     break
         
 
-    def finish_payment(self, key, insertValue):
-        topay = self.valorPago_mtr_entry.get()
+    def finish_payment(self, key, purchCode, parcNow):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
+        topay = self.pagando_mtr_entry.get()
         dictClients[key][7] = float(dictClients[key][7]) - float(topay)
+        dictPurchases[key][purchCode][4] = self.parcelas_mtr_entry.get()
         if float(dictClients[key][7]) < 0:
             print("Enviar valor que sobrou para o money_to_pay")
-        if float(topay)<insertValue:
-            dictPurchases[key][purchCode][4]
-        dictPurchases[key][purchCode][4] = "s"
+        if float(dictClients[key][7]) <= 0:
+            dictPurchases[key][purchCode][3] = "s"
+        
         jmanagerC.create_json('data/clients.json', dictClients)
+        jmanagerP.create_json('data/products.json', dictProducts)
         jmanagerPurch.create_json('data/purchases.json', dictPurchases)
         self.select_list_mtr()
 
@@ -145,6 +161,9 @@ class Application(Funcs):
         root2.mainloop()
     
     def mtr_screen(self):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root2.title("Contas a Receber")
         self.root2.configure(background= '#582f0e')
         width= self.root2.winfo_screenwidth() 
@@ -217,6 +236,9 @@ class Application(Funcs):
         # self.listMtr.bind("<Double-1>",self.on_duble_click) #Função DoubleClick
 
     def mtr_finish(self, key, purchCode):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         self.root3 = Toplevel()
         self.root3.title("Finalizar Compra")
         self.root3.configure(background= '#582f0e')
@@ -267,6 +289,9 @@ class Application(Funcs):
         self.scroolList.place(relx=0.96, rely=0.052, relwidth=0.03, relheight=0.896)
         
     def mtr_finish_widgets3(self, key, purchCode):
+        dictProducts = jmanagerP.read_json('data/products.json')
+        dictClients = jmanagerC.read_json('data/clients.json')
+        dictPurchases = jmanagerPurch.read_json('data/purchases.json')
         # Criação da label da data da compra
         self.data_mtr = Label(self.frame_3, text="Data da Compra: "+str(dictPurchases[key][purchCode][5]) , bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.data_mtr.place(relx=0.1, rely=0.1)
@@ -296,16 +321,27 @@ class Application(Funcs):
         self.parcelas2_mtr.place(relx=0.42, rely=0.3)
 
         #Criação da label das parcelas que faltam
-        parcNow = 0
+        parcNow = int(parcTot)
         owe = dictClients[key][7]
+        j = int(parcTot)
         for i in range(int(parcTot)):
-            print(i)
-            if somPurch*(i+1) >= owe:
-                
-                parcNow = int(parcTot)-(i+1)
+            j -= 1
+            if parcValue*(i+1) >= owe:
+                parcNow = int(parcTot)-j
                 break
         self.parcelas3_mtr = Label(self.frame_3, text="Faltam "+str(parcNow)+" parcelas", bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.parcelas3_mtr.place(relx=0.1, rely=0.4)
+
+        #Criação da label do quanto deve
+        self.devendo_mtr = Label(self.frame_3, text="Ainda deve R$"+str(parcNow*parcValue), bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
+        self.devendo_mtr.place(relx=0.1, rely=0.5)
+
+        #Criação da label e da entrada de quanto está pagando
+        self.pagando_mtr = Label(self.frame_3, text="Pagando", bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
+        self.pagando_mtr.place(relx=0.1, rely=0.6)
+        self.pagando_mtr_entry = Entry(self.frame_3, bg='#c2c5aa')
+        self.pagando_mtr_entry.place(relx=0.3, rely=0.6, relwidth=0.1)
+        self.pagando_mtr_entry.insert(0, parcValue)
 
         #Fazer agora:
         #Confirmar pagamento atualizando o número de parcelas colocados no insert e atualizar 
@@ -315,8 +351,8 @@ class Application(Funcs):
 
         #fechar
         self.bt_close = Button(self.frame_3, text="Fechar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.root3.destroy())
-        self.bt_close.place(relx=0.2, rely=0.75, relwidth=0.2, relheight=0.1)
+        self.bt_close.place(relx=0.1, rely=0.75, relwidth=0.3, relheight=0.1)
         #confirmar pagamento
-        self.bt_finish = Button(self.frame_3, text="Confirmar pagamento", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.finish_payment(key, purchCode, float(insertValue)), self.root3.destroy()])
-        self.bt_finish.place(relx=0.55, rely=0.75, relwidth=0.2, relheight=0.1)
+        self.bt_finish = Button(self.frame_3, text="Confirmar pagamento", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.finish_payment(key, purchCode, parcNow), self.root3.destroy()])
+        self.bt_finish.place(relx=0.6, rely=0.75, relwidth=0.3, relheight=0.1)
 
