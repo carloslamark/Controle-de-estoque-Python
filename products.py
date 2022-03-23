@@ -130,7 +130,8 @@ class Application(Funcs):
         self.root2.configure(background= '#582f0e')
         width= self.root2.winfo_screenwidth() 
         height= self.root2.winfo_screenheight()
-        self.root2.geometry("%dx%d+0+0" % (width-100, height-100))
+        self.root2.wm_state('zoomed')
+        self.root2.geometry("%dx%d+0+0" % (width, height))
         self.root2.resizable(True, True)
         self.root2.minsize(width=600, height=500)
         self.frame_1 = Frame(self.root2, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
@@ -186,8 +187,11 @@ class Application(Funcs):
         self.root3 = Toplevel()
         self.root3.title("Cadastro Produto")
         self.root3.configure(background= '#582f0e')
-        self.root3.geometry('900x600') #tamanho da screen
-        self.root3.resizable(False, False) #Horizontal, Vertical
+        width= self.root3.winfo_screenwidth() 
+        height= self.root3.winfo_screenheight()
+        self.root3.wm_state('zoomed')
+        self.root3.geometry("%dx%d+0+0" % (width, height))
+        self.root3.resizable(True, True)
         self.root3.transient(self.root2)
         self.root3.focus_force()
         self.root3.grab_set()

@@ -1,22 +1,22 @@
 {
   "Monkey D. Luffy": [
-    "123.456.789-00",
-    "(12) 34567-8900",
-    "email.here@email.com",
-    "12/34/5678",
-    "Mother's name",
-    "Blue east, some island, n344",
-    "Middle of the sea",
-    1700.0
+    "123.456.789.00",
+    "(00) 12222-3333",
+    "monkey.roger@one.com",
+    "22/33/4444",
+    "Crocodile",
+    "East blue",
+    "Some island in the sea",
+    950.0
   ],
-  "came": [
-    "2323",
-    "232323",
-    "232323",
-    "232323",
-    "casewqds",
-    "3524",
-    "dferfsd",
-    550.0
+  "Guts, the dark knight": [
+    "222.333.444-55",
+    "(44) 56666-7777",
+    "griffith.love@sword.com",
+    "77/88/9999",
+    "Don't know ;-;",
+    "Warzone",
+    "Anyplace",
+    0
   ]
 }

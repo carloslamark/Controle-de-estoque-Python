@@ -291,7 +291,8 @@ class Funcs():
 
             if key not in dictPurchases:
                 dictPurchases[key] = {}
-                dictPurchases[key].update(purchAux) 
+                dictPurchases[key] = purchAux 
+
             for i in dictPurchases[key].keys():
                 j=i
 
@@ -579,9 +580,9 @@ class Application(Funcs, Relatorios):
         self.frame_1 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth=0.96, relheight=0.16)#Trabalha com porcentagem
         self.frame_2 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-        self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.48, relheight=0.76)#Trabalha com porcentagem
+        self.frame_2.place(relx=0.02 , rely=0.2, relwidth=0.475, relheight=0.76)#Trabalha com porcentagem
         self.frame_3 = Frame(self.root3, border=4, bg='#a68a64', highlightbackground='#936639', highlightthickness=3)
-        self.frame_3.place(relx=0.50 , rely=0.2, relwidth=0.48, relheight=0.76)#Trabalha com porcentagem
+        self.frame_3.place(relx=0.505 , rely=0.2, relwidth=0.475, relheight=0.76)#Trabalha com porcentagem
        
         self.insert_prod_to_cli_widgetsF1(key)  
         self.insert_prod_to_cli_widgetsF2(key)
@@ -672,7 +673,6 @@ class Application(Funcs, Relatorios):
         self.listShop.column("#2", width=100)
         self.listShop.column("#3", width=100)
         
-
         self.listShop.place(relx=0.01, rely=0.2, relwidth=0.95, relheight=0.4)
 
         self.scroolList = Scrollbar(self.frame_3, orient='vertical')
