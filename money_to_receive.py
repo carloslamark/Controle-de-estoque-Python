@@ -47,6 +47,7 @@ class Funcs():
         for i in range(len(dictPurchases[name][purchCode][0])):
             list.append(dictProducts[aux[i]][0])
             list.append(dictPurchases[name][purchCode][2][i])
+            list.append(dictPurchases[name][purchCode][1][i])
             list.append(dictProducts[aux[i]][2] - dictProducts[aux[i]][2]*dictPurchases[name][purchCode][1][i])
             self.listMtr2.insert("", END, values=list)
             list = []
@@ -272,16 +273,18 @@ class Application(Funcs):
         self.telefone_mtr.place(relx=0.6, rely=0.6)
     
     def mtr_finish_widgets2(self, key):
-        self.listMtr2 = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3"))
+        self.listMtr2 = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4"))
         self.listMtr2.heading("#0", text="")
         self.listMtr2.heading("#1", text="Nome do Produto")
         self.listMtr2.heading("#2", text="Quantidade")
-        self.listMtr2.heading("#3", text="Valor")
+        self.listMtr2.heading("#3", text="Desconto")
+        self.listMtr2.heading("#4", text="Valor")
     
         self.listMtr2.column('#0', width=0, stretch=NO)
-        self.listMtr2.column("#1", width=300)
+        self.listMtr2.column("#1", width=200)
         self.listMtr2.column("#2", width=100)
         self.listMtr2.column("#3", width=100)
+        self.listMtr2.column("#4", width=100)
 
         self.listMtr2.place(relx=0.01, rely=0.05, relwidth=0.95, relheight=0.9)
         self.scroolList = Scrollbar(self.frame_2, orient='vertical')
@@ -331,15 +334,20 @@ class Application(Funcs):
         self.parcelas3_mtr.place(relx=0.1, rely=0.4)
 
         #Criação da label do quanto deve
-        self.devendo_mtr = Label(self.frame_3, text="Ainda deve R$"+str(parcNow*parcValue), bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
+        self.devendo_mtr = Label(self.frame_3, text="Ainda deve R$"+str(dictClients[key][7]), bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.devendo_mtr.place(relx=0.1, rely=0.5)
+
+        
 
         #Criação da label e da entrada de quanto está pagando
         self.pagando_mtr = Label(self.frame_3, text="Pagando", bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.pagando_mtr.place(relx=0.1, rely=0.6)
         self.pagando_mtr_entry = Entry(self.frame_3, bg='#c2c5aa')
         self.pagando_mtr_entry.place(relx=0.3, rely=0.6, relwidth=0.1)
-        self.pagando_mtr_entry.insert(0, parcValue)
+        if parcValue > dictClients[key][7]:
+            self.pagando_mtr_entry.insert(0, dictClients[key][7])
+        else:
+            self.pagando_mtr_entry.insert(0, parcValue)
 
         #fechar
         self.bt_close = Button(self.frame_3, text="Fechar", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: self.root3.destroy())
