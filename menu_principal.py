@@ -24,9 +24,9 @@ class Application(Funcs):
     def menu_screen(self):
         self.root.title("Menu Principal")
         self.root.configure(background= '#582f0e')
-        width= root.winfo_screenwidth() 
-        height= root.winfo_screenheight()
-        root.wm_state('zoomed')
+        width= self.root.winfo_screenwidth() 
+        height= self.root.winfo_screenheight()
+        self.root.wm_state('zoomed')
         self.root.geometry("%dx%d+0+0" % (width, height))
         self.root.resizable(True, True)
         self.root.minsize(width=600, height=500)

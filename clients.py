@@ -313,10 +313,15 @@ class Funcs():
                     break
         
     
-    def update_buy_list(self, key, code, quant, disc, dCom, parc):
+    def update_buy_list(self, key):
         dictProducts = jmanagerP.read_json('data/products.json')
         dictClients = jmanagerC.read_json('data/clients.json')
         dictPurchases = jmanagerPurch.read_json('data/purchases.json')
+        code = self.codigo_insert_entry.get()
+        quant = self.quantity_insert_entry.get()
+        disc = float(self.discount_insert_entry.get())
+        dCom = self.dataCom_insert_entry.get()
+        parc = self.parcelas_insert_entry.get()
         if code!="" and disc!="":
             j=1
             if quant == "":
@@ -325,7 +330,8 @@ class Funcs():
                 parc =  1
             if dCom == "":
                 dCom = str(dateToday)
-            disc = round((disc/100),3)
+            disc = round((disc/100),10)
+            print(disc)
             if key not in dictPurchases:
                 dictPurchases[key] = {}
                 dictPurchases[key]["1"] = [[], [], [], "n", "", ""]
@@ -342,9 +348,7 @@ class Funcs():
                 dictPurchases[key][j][3] ="n"
                 dictPurchases[key][j][4] = parc
                 dictPurchases[key][j][5] = dCom
-                if disc == 0:
-                    disc = 1
-                dictClients[key][7] += dictProducts[code][2] - (dictProducts[code][2]*int(quant)*disc)
+                dictClients[key][7] += dictProducts[code][2]*int(quant) - (dictProducts[code][2]*int(quant)*disc)
 
                 if dictProducts[code][1]-int(quant) >= 0:
                     dictProducts[code][1] -= int(quant)
@@ -356,9 +360,7 @@ class Funcs():
                 dictPurchases[key][j][2].append(int(quant))
                 dictPurchases[key][j][4] = parc
                 dictPurchases[key][j][5] = dCom
-                if disc == 0:
-                    disc = 1
-                dictClients[key][7] += dictProducts[code][2] - (dictProducts[code][2]*int(quant)*disc)
+                dictClients[key][7] += dictProducts[code][2]*int(quant) - (dictProducts[code][2]*int(quant)*disc)
 
                 if dictProducts[code][1]-int(quant) >= 0:
                     dictProducts[code][1] -= int(quant)
@@ -371,7 +373,6 @@ class Funcs():
             jmanagerPurch.create_json('data/purchases.json', dictPurchases)
             self.select_list_shop(key)
             
-
 
 class Application(Funcs, Relatorios):
     def start(self, root2):
@@ -689,7 +690,7 @@ class Application(Funcs, Relatorios):
         self.discount_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.2)
 
         #insert
-        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key, self.codigo_insert_entry.get(), self.quantity_insert_entry.get(), float(self.discount_insert_entry.get()), self.dataCom_insert_entry.get(), self.parcelas_insert_entry.get())])
+        self.bt_insert = Button(self.frame_2, text="Inserir na Compra", bd=2, bg='#a4ac86', fg='black', font=('Verdana', 11), command=lambda: [self.update_buy_list(key)])
         self.bt_insert.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
 
     
@@ -732,12 +733,15 @@ class Application(Funcs, Relatorios):
         self.parcelas_insert.place(relx=0.6, rely=0.65)
         self.parcelas_insert_entry = Entry(self.frame_3, bg='#c2c5aa')
         self.parcelas_insert_entry.place(relx=0.6, rely=0.7, relwidth=0.15)
+        j=0
         if key in dictPurchases:
-            j=0
             for i in dictPurchases[key]:
                 j=i
             if dictPurchases[key][j][3] == "n":
-                self.parcelas_insert_entry.insert(0, dictPurchases[key][j][4])
+                if dictPurchases[key][j][4] == 0:
+                    self.parcelas_insert_entry.insert(0, 1)
+                else:
+                    self.parcelas_insert_entry.insert(0, dictPurchases[key][j][4])
                 self.dataCom_insert_entry.insert(0, dictPurchases[key][j][5])
             else:
                 self.parcelas_insert_entry.insert(0, 1)

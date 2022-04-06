@@ -47,10 +47,7 @@ class Funcs():
         for i in range(len(dictPurchases[name][purchCode][0])):
             list.append(dictProducts[aux[i]][0])
             list.append(dictPurchases[name][purchCode][2][i])
-            if dictPurchases[name][purchCode][1][i] == "s":
-                list.append(dictProducts[aux[i]][3])
-            else:
-                list.append(dictProducts[aux[i]][2])
+            list.append(dictProducts[aux[i]][2] - dictProducts[aux[i]][2]*dictPurchases[name][purchCode][1][i])
             self.listMtr2.insert("", END, values=list)
             list = []
         
@@ -275,7 +272,7 @@ class Application(Funcs):
         self.telefone_mtr.place(relx=0.6, rely=0.6)
     
     def mtr_finish_widgets2(self, key):
-        self.listMtr2 = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3", "col4", "col5"))
+        self.listMtr2 = ttk.Treeview(self.frame_2, height=3, column=("col1", "col2", "col3"))
         self.listMtr2.heading("#0", text="")
         self.listMtr2.heading("#1", text="Nome do Produto")
         self.listMtr2.heading("#2", text="Quantidade")
@@ -304,10 +301,8 @@ class Application(Funcs):
         flag = dictPurchases[key][purchCode][1]
         quant = dictPurchases[key][purchCode][2]
         for i in range(len(code)):
-            if flag[i] == "s":
-                somPurch += dictProducts[code[i]][3]*quant[i]
-            else:
-                somPurch += dictProducts[code[i]][2]*quant[i]
+            somPurch += dictProducts[code[i]][2]*quant[i] - dictProducts[code[i]][2]*quant[i]*flag[i]
+            
         self.compraTotal_mtr = Label(self.frame_3, text="Compra Total: "+str(somPurch) , bg='#a68a64', fg='#582f0e', font=('Arial', 15, BOLD))
         self.compraTotal_mtr.place(relx=0.1, rely=0.2)
 
